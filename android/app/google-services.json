@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "49020747264",
+    "project_id": "trafficapp-12e86",
+    "storage_bucket": "trafficapp-12e86.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:49020747264:android:6ec4f3bf90151b7beae2e5",
+        "android_client_info": {
+          "package_name": "com.example.sltrafficapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8MF1RZ-GixxjTQ0r0zxd2XSY0JcWTAEQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

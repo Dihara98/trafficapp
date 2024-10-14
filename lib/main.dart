@@ -1,8 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 //import 'third_page.dart';
+//import 'first_page.dart';
+//import 'second_page.dart';
 import 'sixth_page.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-     home:SixthPage(),
+     home:SixthPage(), //start app with first page
 
     );
   }

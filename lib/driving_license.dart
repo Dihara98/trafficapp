@@ -1,4 +1,5 @@
 //this page is used for the sixth_page.dart
+//this is the seventh and eighth page
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -91,21 +92,35 @@ class _DrivingLicensePageState extends State<DrivingLicensePage> {
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: driverDetails!.entries.map((entry) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: Text(
-                            '${entry.key}: ${entry.value}',
-                            style: TextStyle(fontSize: 16, color: Colors.black),
-                          ),
-                        );
-                      }).toList(),
+                      children: [
+
+                        _buildDataField('Driving License Number', widget.licenseNumber),
+                        _buildDataField('NIC No', driverDetails!['NIC']),
+                        _buildDataField('Full Name', driverDetails!['fullName']),
+                        _buildDataField('Address', driverDetails!['address']),
+                        _buildDataField('Date of Birth', driverDetails!['dateOfBirth']),
+                        _buildDataField('Date of Issue of the License', driverDetails!['dateOfIssue']),
+                        _buildDataField('Date of Expiry of the License', driverDetails!['dateOfExpiry']),
+                        _buildDataField('Blood Group', driverDetails!['bloodGroup']),
+
+                      ],
                     ),
                   ),
                 ),
               ),
           ],
         ),
+      ),
+    );
+  }
+
+  //build the data field with label and value
+  Widget _buildDataField(String label, dynamic value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Text(
+        '$label: $value',
+        style: TextStyle(fontSize: 16, color: Colors.black),
       ),
     );
   }

@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   firebase_core: ^3.6.0
   cloud_firestore: ^5.4.4
+  crypto: ^3.0.1
 
 dev_dependencies:
   flutter_test:
@@ -54,6 +55,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  assets:
+    - assets/logo.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

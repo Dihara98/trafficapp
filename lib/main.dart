@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+//import 'third_page.dart';
+import 'sixth_page.dart';
 
 
 void main() async {
@@ -35,10 +37,52 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-     //home:DataDisplayScreen(),
+     home:SixthPage(),
+
     );
   }
 }
+/* this is a test code
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _currentIndex = 0;
+  final List<Widget> _pages = [ThirdPage(), SixthPage()];
+
+  void onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Multi Page Navigation'),
+      ),
+      body: _pages[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: onTabTapped,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.pageview),
+            label: 'Third Page',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.pages),
+            label: 'Sixth Page',
+          ),
+        ],
+      ),
+    );
+  }
+}*/
+
 /*
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});

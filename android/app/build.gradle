@@ -38,6 +38,10 @@ android {
             signingConfig = signingConfigs.debug
         }
     }
+    //when use hashed
+    defaultConfig {
+        minSdkVersion 23
+        }
 }
 
 flutter {

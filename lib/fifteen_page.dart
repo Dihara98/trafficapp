@@ -1,6 +1,32 @@
 import 'package:flutter/material.dart';
+import 'firebase_service.dart';
 
-class FifteenPage extends StatelessWidget {
+class FifteenPage extends StatefulWidget {
+  @override
+  _FifteenPageState createState() => _FifteenPageState();
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
+}
+
+class _FifteenPageState extends State<FifteenPage> {
+  final FirebaseService _firebaseService = FirebaseService();
+  String driverName = '';
+  String driverAddress = '';
+
+  Future<void> fetchDriverDetails(String vehicleNumber) async {
+    final driverData = await _firebaseService.fetchDriverDetails(vehicleNumber);
+    if (driverData != null) {
+      setState(() {
+        driverName = driverData['fullName'] ?? '';
+        driverAddress = driverData['address'] ?? '';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

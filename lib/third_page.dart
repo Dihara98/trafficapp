@@ -27,7 +27,7 @@ class _ThirdPageState extends State<ThirdPage> {
     try {
       // Query Firestore to get user data
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('TrafficPoliceOfficer')
+          .collection('TrafficPoliceOfficer') // Your Firestore collection
           .where('userName', isEqualTo: username)
           .limit(1)
           .get();
@@ -170,4 +170,3 @@ class _ThirdPageState extends State<ThirdPage> {
     );
   }
 }
-

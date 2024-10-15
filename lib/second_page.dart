@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'third_page.dart';
 
 class SecondPage extends StatelessWidget {
   const SecondPage({super.key});
@@ -23,7 +24,7 @@ class SecondPage extends StatelessWidget {
               ),
               onPressed: () {
                 // Navigate to Police Page
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const PolicePage()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ThirdPage()));
               },
               child: Row(
                 children: [
@@ -77,7 +78,7 @@ class SecondPage extends StatelessWidget {
     );
   }
 }
-
+/*
 // Dummy PolicePage
 class PolicePage extends StatelessWidget {
   const PolicePage({super.key});
@@ -89,7 +90,7 @@ class PolicePage extends StatelessWidget {
       body: const Center(child: Text("Police Dashboard")),
     );
   }
-}
+}*/
 
 // Dummy DriverPage
 class DriverPage extends StatelessWidget {

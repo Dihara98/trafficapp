@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'fifth_page.dart';
+
 // This page will receive the user data fetched from Firestore
 class FourthPage extends StatelessWidget {
   final Map<String, dynamic> userData;
@@ -72,7 +74,7 @@ class FourthPage extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => FinesPage()),
+                      MaterialPageRoute(builder: (context) => FifthPage()),
                     );
                   },
                   style: ElevatedButton.styleFrom(

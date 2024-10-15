@@ -86,7 +86,7 @@ class _DrivingLicensePageState extends State<DrivingLicensePage> {
             if (driverDetails != null)
               Expanded(
                 child: Card(
-                  color: Colors.white,
+                  color: Color(0xFF074D5E),
                   margin: EdgeInsets.only(top: 20),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -120,7 +120,8 @@ class _DrivingLicensePageState extends State<DrivingLicensePage> {
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Text(
         '$label: $value',
-        style: TextStyle(fontSize: 16, color: Colors.black),
+        style: TextStyle(fontSize: 16, color: Colors.white
+        ),
       ),
     );
   }

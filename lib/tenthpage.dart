@@ -75,7 +75,7 @@ class VehicleDetailsPage extends StatelessWidget {
               Text("Owner: Kahandugoda Manage Dilhara Madhushani", style: TextStyle(fontSize: 16)),
               Text("Address: No 550, Kudagama, Maho", style: TextStyle(fontSize: 16)),
               Text("Engine Number: 4D56T456789", style: TextStyle(fontSize: 16)),
-              Text("Make: Toyota", style: TextStyle(fontSize: 16)),
+              Text("Make: Toyota ", style: TextStyle(fontSize: 16)),
               Text("Model: Corolla", style: TextStyle(fontSize: 16)),
             ],
           ),

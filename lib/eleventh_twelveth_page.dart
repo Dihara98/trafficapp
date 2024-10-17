@@ -4,6 +4,7 @@ import 'fifteen_page.dart';
 
 class EleventhPage extends StatefulWidget {
   final String vehicleNumber;
+  String dlNo = '';
 
   EleventhPage({required this.vehicleNumber});
 
@@ -213,7 +214,7 @@ class _EleventhPageState extends State<EleventhPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => FifteenPage(),
+                      builder: (context) => FifteenPage(dlNo: widget.dlNo),
                     ),
                   );
                 },

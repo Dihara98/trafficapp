@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Firebase Firestore package
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sltrafficapp/fourth_page.dart';
+import 'signup_police_page.dart';
 
 class ThirdPage extends StatefulWidget {
   @override
@@ -153,7 +154,11 @@ class _ThirdPageState extends State<ThirdPage> {
               // Sign Up link
               GestureDetector(
                 onTap: () {
-                  // Handle sign-up navigation
+                  // Navigate to the SignupPage
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignupPolicePage()),
+                  );
                 },
                 child: Text(
                   'Don\'t have an account? Sign up',

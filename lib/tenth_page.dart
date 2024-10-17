@@ -244,10 +244,11 @@ class _TenthPageState extends State<TenthPage> {
         ),
         centerTitle: true,
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 // Navigate to the EleventhPage (combined details page)

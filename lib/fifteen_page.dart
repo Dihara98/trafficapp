@@ -1,30 +1,85 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'firebase_service.dart';
+import 'sixteen_page.dart';
 
 class FifteenPage extends StatefulWidget {
-  @override
-  _FifteenPageState createState() => _FifteenPageState();
+  final String dlNo; // Accepts license number as a parameter
+
+  FifteenPage({required this.dlNo});
 
   @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
-  }
+  _FifteenPageState createState() => _FifteenPageState();
 }
 
 class _FifteenPageState extends State<FifteenPage> {
-  final FirebaseService _firebaseService = FirebaseService();
-  String driverName = '';
-  String driverAddress = '';
+  final TextEditingController _vehicleNo = TextEditingController();
+  final TextEditingController _contactNo = TextEditingController();
+  final TextEditingController _placeOffence = TextEditingController(); // Place of offence text field
+  String? _selectedItem;
+  String? _errorMessage;
+  Map<String, dynamic>? driverDetails;
+  String? errorMessage;
 
-  Future<void> fetchDriverDetails(String vehicleNumber) async {
-    final driverData = await _firebaseService.fetchDriverDetails(vehicleNumber);
-    if (driverData != null) {
+  @override
+  void initState() {
+    super.initState();
+    _fetchDriverDetails(); // Fetch the details when the page loads
+  }
+
+  Future<void> _fetchDriverDetails() async {
+    try {
+      // Query Firestore to find a document with the matching dlNo field
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('DrivingLicence') // Replace with your collection name in Firestore
+          .where('dlNo', isEqualTo: widget.dlNo) // Query using the dlNo field
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        setState(() {
+          // Assuming that dlNo is unique and you get one document
+          driverDetails = querySnapshot.docs.first.data() as Map<String, dynamic>?;
+          errorMessage = null; // Clear the error message if data is found
+        });
+      } else {
+        setState(() {
+          driverDetails = null;
+          errorMessage = 'No details found for the entered Driving License Number.';
+        });
+      }
+    } catch (e) {
       setState(() {
-        driverName = driverData['fullName'] ?? '';
-        driverAddress = driverData['address'] ?? '';
+        errorMessage = 'Error retrieving data: $e';
+        driverDetails = null;
       });
     }
+  }
+
+  // Function to push data to the next page
+  void _goToNextPage() {
+    String vehicleNo = _vehicleNo.text;
+    String contactNo = _contactNo.text;
+    String placeOffence = _placeOffence.text; // Get place of offence
+
+    if (_selectedItem == null || vehicleNo.isEmpty || contactNo.isEmpty || placeOffence.isEmpty) {
+      setState(() {
+        _errorMessage = 'Please fill all fields';
+      });
+      return;
+    }
+
+    // Navigate to the SixteenPage with all the data
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SixteenPage(
+          dlNo: widget.dlNo, // Use widget.dlNo
+          selectedFine: _selectedItem!,
+          vehicleNo: vehicleNo,
+          contactNo: contactNo,
+          placeOffence: placeOffence, // Pass the place of offence
+        ),
+      ),
+    );
   }
 
   @override
@@ -64,134 +119,23 @@ class _FifteenPageState extends State<FifteenPage> {
                 ),
                 DropdownMenuItem(
                   child: Text("3. Contravening R.L provisions"),
-                    value: "3",
+                  value: "3",
                 ),
                 DropdownMenuItem(
                   child: Text("4. Driving Emergency Service Vehicles & Public Service Vehicles without D.L."),
                   value: "4",
                 ),
-                DropdownMenuItem(
-                  child: Text("5. Driving Special Purpose Vehicles without a license."),
-                  value: "5",
-                ),
-                DropdownMenuItem(
-                  child: Text("6. Driving a vehicle loaded with chemicals / hazardous waste without a license."),
-                  value: "6",
-                ),
-                DropdownMenuItem(
-                  child: Text("7. Not having a license to drive a specific class of vehicles."),
-                  value: "7",
-                ),
-                DropdownMenuItem(
-                  child: Text("8. Not carrying D.L."),
-                  value: "8",
-                ),
-                DropdownMenuItem(
-                  child: Text("9. Not having an instructor's license."),
-                  value: "9",
-                ),
-                DropdownMenuItem(
-                  child: Text("10. Contrvening Speed Limits."),
-                  value: "10",
-                ),
-                DropdownMenuItem(
-                  child: Text("11. Disobeying Road Rules"),
-                  value: "11",
-                ),
-                DropdownMenuItem(
-                  child: Text("12. Activities obstructing control of the motor vehicle."),
-                  value: "12",
-                ),
-                DropdownMenuItem(
-                  child: Text("13. Signals by Driver"),
-                  value: "13",
-                ),
-                DropdownMenuItem(
-                  child: Text("14. Reversing for a long Distance."),
-                  value: "14",
-                ),
-                DropdownMenuItem(
-                  child: Text("15. Sound or Light warnings"),
-                  value: "15",
-                ),
-                DropdownMenuItem(
-                  child: Text("16. Excessive emission of smoke, etc."),
-                  value: "16",
-                ),
-                DropdownMenuItem(
-                  child: Text("17. Riding on running boards"),
-                  value: "17",
-                ),
-                DropdownMenuItem(
-                  child: Text("18. No. of persons in front seats"),
-                  value: "18",
-                ),
-                DropdownMenuItem(
-                  child: Text("19. Non-use of seat belts."),
-                  value: "19",
-                ),
-                DropdownMenuItem(
-                  child: Text("20. Not wearing protective helmets"),
-                  value: "20",
-                ),
-                DropdownMenuItem(
-                  child: Text("Distribution of Advertisement"),
-                  value: "21",
-                ),
-                DropdownMenuItem(
-                  child: Text("Excessive use of Noise"),
-                  value: "22",
-                ),
-                DropdownMenuItem(
-                  child: Text("Disobeying Directions & Signals of Police Officers / Traffic Wardens"),
-                  value: "23",
-                ),
-                DropdownMenuItem(
-                  child: Text("Non-Compliance with Traffic Signals"),
-                  value: "24",
-                ),
-                DropdownMenuItem(
-                  child: Text("Failure to take precautions when discharging fuel into tank"),
-                  value: "25",
-                ),
-                DropdownMenuItem(
-                  child: Text("Halting or Parking"),
-                  value: "26",
-                ),
-                DropdownMenuItem(
-                  child: Text("Non-use of precations when parking"),
-                  value: "27",
-                ),
-                DropdownMenuItem(
-                  child: Text("Excessive carriage of persons in motor car or private coach"),
-                  value: "28",
-                ),
-                DropdownMenuItem(
-                  child: Text("Carriage of passengers in excess in omnibuses"),
-                  value: "29",
-                ),
-                DropdownMenuItem(
-                  child: Text("Carriage on lorry or Motor Tricycle van of goods in excess"),
-                  value: "30",
-                ),
-                DropdownMenuItem(
-                  child: Text("No. of persons carried in a lorry"),
-                  value: "31",
-                ),
-                DropdownMenuItem(
-                  child: Text("Violations of Regulations on motor vehicles"),
-                  value: "32",
-                ),
-                DropdownMenuItem(
-                  child: Text("Failure to carry the Emission certificate or the Fitness Certificate"),
-                  value: "33",
-                ),
               ],
-              onChanged: (value) {},
+              onChanged: (value) {
+                setState(() {
+                  _selectedItem = value;
+                });
+              },
             ),
             const SizedBox(height: 20),
             TextField(
-              decoration: const InputDecoration(
+              controller: _vehicleNo,
+              decoration: InputDecoration(
                 labelText: 'Vehicle Number',
                 labelStyle: TextStyle(color: Colors.white),
                 filled: true,
@@ -201,7 +145,8 @@ class _FifteenPageState extends State<FifteenPage> {
             ),
             const SizedBox(height: 20),
             TextField(
-              decoration: const InputDecoration(
+              controller: _contactNo,
+              decoration: InputDecoration(
                 labelText: 'Contact Number',
                 labelStyle: TextStyle(color: Colors.white),
                 filled: true,
@@ -209,24 +154,43 @@ class _FifteenPageState extends State<FifteenPage> {
               ),
               keyboardType: TextInputType.phone,
             ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _placeOffence, // Input for place of offence
+              decoration: InputDecoration(
+                labelText: 'Place of Offence',
+                labelStyle: TextStyle(color: Colors.white),
+                filled: true,
+                fillColor: Colors.white24,
+              ),
+              keyboardType: TextInputType.text,
+            ),
             const SizedBox(height: 30),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFE6A500), // Updated to backgroundColor
+                backgroundColor: const Color(0xFFE6A500),
                 padding: const EdgeInsets.symmetric(vertical: 15),
               ),
-              onPressed: () {
-                // Handle button press, e.g., navigate to next page
-              },
-              child: const Text(
+              onPressed: _goToNextPage,
+              child: Text(
                 'NEXT',
                 style: TextStyle(fontSize: 18),
               ),
             ),
+            if (_errorMessage != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: Text(
+                  _errorMessage!,
+                  style: TextStyle(
+                    color: _errorMessage == 'Data submitted successfully!' ? Colors.green : Colors.red,
+                  ),
+                ),
+              ),
           ],
         ),
       ),
-      backgroundColor: const Color(0xFF1b4a56), // Dark blue background
+      backgroundColor: const Color(0xFF1b4a56),
     );
   }
 }

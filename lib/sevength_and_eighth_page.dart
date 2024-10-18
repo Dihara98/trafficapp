@@ -1,10 +1,10 @@
-//this page is used for the sixth_page.dart
-//this is the seventh and eighth page
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
+import 'nineth_page.dart';
 
 class DrivingLicensePage extends StatefulWidget {
-  final String licenseNumber; // Accept the license number as a parameter
+  final String licenseNumber;
 
   DrivingLicensePage({required this.licenseNumber});
 
@@ -19,22 +19,22 @@ class _DrivingLicensePageState extends State<DrivingLicensePage> {
   @override
   void initState() {
     super.initState();
-    _fetchDriverDetails(); // Fetch the details when the page loads
+    _fetchDriverDetails();
   }
 
   Future<void> _fetchDriverDetails() async {
     try {
-      // Query Firestore to find a document with the matching dlNo field
+
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('DrivingLicence') // Replace with your collection name in Firestore
-          .where('dlNo', isEqualTo: widget.licenseNumber) // Query using the dlNo field
+          .collection('DrivingLicence')
+          .where('dlNo', isEqualTo: widget.licenseNumber)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
         setState(() {
-          // Assuming that dlNo is unique and you get one document
+
           driverDetails = querySnapshot.docs.first.data() as Map<String, dynamic>?;
-          errorMessage = null; // Clear the error message if data is found
+          errorMessage = null;
         });
       } else {
         setState(() {
@@ -50,11 +50,10 @@ class _DrivingLicensePageState extends State<DrivingLicensePage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF074D5E), // Background color matching your design
+      backgroundColor: Color(0xFF074D5E),
       appBar: AppBar(
         backgroundColor: Color(0xFF074D5E),
         elevation: 0,
@@ -67,7 +66,7 @@ class _DrivingLicensePageState extends State<DrivingLicensePage> {
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Image.asset('assets/logo.png', width: 40), // Replace with your logo
+            child: Image.asset('assets/logo.png', width: 40),
           ),
         ],
       ),
@@ -85,7 +84,8 @@ class _DrivingLicensePageState extends State<DrivingLicensePage> {
               ),
             if (driverDetails != null)
               Expanded(
-                child: Card(
+                child: SingleChildScrollView(
+                 child: Card(
                   color: Color(0xFF074D5E),
                   margin: EdgeInsets.only(top: 20),
                   child: Padding(
@@ -93,36 +93,99 @@ class _DrivingLicensePageState extends State<DrivingLicensePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-
                         _buildDataField('Driving License Number', widget.licenseNumber),
                         _buildDataField('NIC No', driverDetails!['NIC']),
                         _buildDataField('Full Name', driverDetails!['fullName']),
                         _buildDataField('Address', driverDetails!['address']),
-                        _buildDataField('Date of Birth', driverDetails!['dateOfBirth']),
-                        _buildDataField('Date of Issue of the License', driverDetails!['dateOfIssue']),
-                        _buildDataField('Date of Expiry of the License', driverDetails!['dateOfExpiry']),
+                        _buildDataField('Date of Birth', formatTimestamp(driverDetails!['dateOfBirth'])),
+                        _buildDataField('Date of Issue of the License', formatTimestamp(driverDetails!['dateOfIssue'])),
+                        _buildDataField('Date of Expiry of the License', formatTimestamp(driverDetails!['dateOfExpiry'])),
                         _buildDataField('Blood Group', driverDetails!['bloodGroup']),
-
+                        SizedBox(height: 16.0), // Add some space
+                        Text(
+                          'Vehicle Categories:',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                        _buildVehicleCategoriesTable(driverDetails!['vehicleCategories']),
                       ],
                     ),
                   ),
                 ),
+               ),
               ),
+            ElevatedButton(
+              onPressed: () {
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NinethPage(),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber,
+                padding: EdgeInsets.symmetric(horizontal: 80, vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                'Vehicle Number',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  //build the data field with label and value
+
   Widget _buildDataField(String label, dynamic value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Text(
         '$label: $value',
-        style: TextStyle(fontSize: 16, color: Colors.white
-        ),
+        style: TextStyle(fontSize: 16, color: Colors.white),
       ),
     );
+  }
+
+
+  Widget _buildVehicleCategoriesTable(Map<String, dynamic> vehicleCategories) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: DataTable(
+        columnSpacing: 10.0,
+        columns: const [
+          DataColumn(label: Text('Category', style: TextStyle(color: Colors.white))),
+          DataColumn(label: Text('Date of Issue', style: TextStyle(color: Colors.white))),
+          DataColumn(label: Text('Date of Expiry', style: TextStyle(color: Colors.white))),
+        ],
+        rows: vehicleCategories.entries.map((entry) {
+          Map<String, dynamic> categoryData = entry.value;
+          return DataRow(cells: [
+            DataCell(Text(entry.key, style: TextStyle(color: Colors.white))),
+            DataCell(Text(categoryData['dateOfIssue'] != null
+                ? formatTimestamp(categoryData['dateOfIssue'])
+                : 'N/A', style: TextStyle(color: Colors.white))),
+            DataCell(Text(categoryData['dateOfExpiry'] != null
+                ? formatTimestamp(categoryData['dateOfExpiry'])
+                : 'N/A', style: TextStyle(color: Colors.white))),
+          ]);
+        }).toList(),
+      ),
+    );
+  }
+
+  String formatTimestamp(Timestamp? timestamp) {
+    if (timestamp == null) return 'N/A';
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp.seconds * 1000);
+    return DateFormat('dd MMMM yyyy').format(date); // Only show date
   }
 }

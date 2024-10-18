@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'sixteen_page.dart';
+import 'sixteen_and_seventeen_page.dart';
 
 class FifteenPage extends StatefulWidget {
-  final String dlNo; // Accepts license number as a parameter
+  final String dlNo;
 
   FifteenPage({required this.dlNo});
 
@@ -14,7 +14,7 @@ class FifteenPage extends StatefulWidget {
 class _FifteenPageState extends State<FifteenPage> {
   final TextEditingController _vehicleNo = TextEditingController();
   final TextEditingController _contactNo = TextEditingController();
-  final TextEditingController _placeOffence = TextEditingController(); // Place of offence text field
+  final TextEditingController _placeOffence = TextEditingController();
   String? _selectedItem;
   String? _errorMessage;
   Map<String, dynamic>? driverDetails;
@@ -23,22 +23,22 @@ class _FifteenPageState extends State<FifteenPage> {
   @override
   void initState() {
     super.initState();
-    _fetchDriverDetails(); // Fetch the details when the page loads
+    _fetchDriverDetails();
   }
 
   Future<void> _fetchDriverDetails() async {
     try {
-      // Query Firestore to find a document with the matching dlNo field
+
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('DrivingLicence') // Replace with your collection name in Firestore
-          .where('dlNo', isEqualTo: widget.dlNo) // Query using the dlNo field
+          .collection('DrivingLicence')
+          .where('dlNo', isEqualTo: widget.dlNo)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
         setState(() {
-          // Assuming that dlNo is unique and you get one document
+
           driverDetails = querySnapshot.docs.first.data() as Map<String, dynamic>?;
-          errorMessage = null; // Clear the error message if data is found
+          errorMessage = null;
         });
       } else {
         setState(() {
@@ -54,11 +54,11 @@ class _FifteenPageState extends State<FifteenPage> {
     }
   }
 
-  // Function to push data to the next page
+
   void _goToNextPage() {
     String vehicleNo = _vehicleNo.text;
     String contactNo = _contactNo.text;
-    String placeOffence = _placeOffence.text; // Get place of offence
+    String placeOffence = _placeOffence.text;
 
     if (_selectedItem == null || vehicleNo.isEmpty || contactNo.isEmpty || placeOffence.isEmpty) {
       setState(() {
@@ -67,16 +67,16 @@ class _FifteenPageState extends State<FifteenPage> {
       return;
     }
 
-    // Navigate to the SixteenPage with all the data
+
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SixteenPage(
-          dlNo: widget.dlNo, // Use widget.dlNo
+        builder: (context) => SixteenAndSeventeenPage(
+          dlNo: widget.dlNo,
           selectedFine: _selectedItem!,
           vehicleNo: vehicleNo,
           contactNo: contactNo,
-          placeOffence: placeOffence, // Pass the place of offence
+          placeOffence: placeOffence,
         ),
       ),
     );
@@ -156,7 +156,7 @@ class _FifteenPageState extends State<FifteenPage> {
             ),
             const SizedBox(height: 20),
             TextField(
-              controller: _placeOffence, // Input for place of offence
+              controller: _placeOffence,
               decoration: InputDecoration(
                 labelText: 'Place of Offence',
                 labelStyle: TextStyle(color: Colors.white),

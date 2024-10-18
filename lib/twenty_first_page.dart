@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class TwentyFirstPage extends StatefulWidget {
   final String userName;
   TwentyFirstPage({required this.userName});
-
 
   @override
   _TwentyFirstPageState createState() => _TwentyFirstPageState();
@@ -22,7 +22,6 @@ class _TwentyFirstPageState extends State<TwentyFirstPage> {
 
   Future<void> _fetchDriverDetails() async {
     try {
-
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('DrivingLicence')
           .where('userName', isEqualTo: widget.userName)
@@ -30,7 +29,6 @@ class _TwentyFirstPageState extends State<TwentyFirstPage> {
 
       if (querySnapshot.docs.isNotEmpty) {
         setState(() {
-
           driverDetails = querySnapshot.docs.first.data() as Map<String, dynamic>?;
           errorMessage = null;
         });
@@ -47,7 +45,6 @@ class _TwentyFirstPageState extends State<TwentyFirstPage> {
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +80,8 @@ class _TwentyFirstPageState extends State<TwentyFirstPage> {
               ),
             if (driverDetails != null)
               Expanded(
-                child: Card(
+                child: SingleChildScrollView(
+                 child: Card(
                   color: Color(0xFF074D5E),
                   margin: EdgeInsets.only(top: 20),
                   child: Padding(
@@ -91,20 +89,25 @@ class _TwentyFirstPageState extends State<TwentyFirstPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-
-                        _buildDataField('Driving License Number', driverDetails! ['dlNo']),
+                        _buildDataField('Driving License Number', driverDetails!['dlNo']),
                         _buildDataField('NIC No', driverDetails!['NIC']),
                         _buildDataField('Full Name', driverDetails!['fullName']),
                         _buildDataField('Address', driverDetails!['address']),
-                        _buildDataField('Date of Birth', driverDetails!['dateOfBirth']),
-                        _buildDataField('Date of Issue of the License', driverDetails!['dateOfIssue']),
-                        _buildDataField('Date of Expiry of the License', driverDetails!['dateOfExpiry']),
+                        _buildDataField('Date of Birth', formatTimestamp(driverDetails!['dateOfBirth'])),
+                        _buildDataField('Date of Issue of the License', formatTimestamp(driverDetails!['dateOfIssue'])),
+                        _buildDataField('Date of Expiry of the License', formatTimestamp(driverDetails!['dateOfExpiry'])),
                         _buildDataField('Blood Group', driverDetails!['bloodGroup']),
-
+                        SizedBox(height: 16.0),
+                        Text(
+                          'Vehicle Categories:',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                        _buildVehicleCategoriesTable(driverDetails!['vehicleCategories']),
                       ],
                     ),
                   ),
                 ),
+              ),
               ),
           ],
         ),
@@ -112,15 +115,45 @@ class _TwentyFirstPageState extends State<TwentyFirstPage> {
     );
   }
 
-  //build the data field with label and value
   Widget _buildDataField(String label, dynamic value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Text(
         '$label: $value',
-        style: TextStyle(fontSize: 16, color: Colors.white
-        ),
+        style: TextStyle(fontSize: 16, color: Colors.white),
       ),
     );
   }
+}
+
+Widget _buildVehicleCategoriesTable(Map<String, dynamic> vehicleCategories) {
+  return SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    child: DataTable(
+      columnSpacing: 10.0,
+      columns: const [
+        DataColumn(label: Text('Category', style: TextStyle(color: Colors.white))),
+        DataColumn(label: Text('Date of Issue', style: TextStyle(color: Colors.white))),
+        DataColumn(label: Text('Date of Expiry', style: TextStyle(color: Colors.white))),
+      ],
+      rows: vehicleCategories.entries.map((entry) {
+        Map<String, dynamic> categoryData = entry.value;
+        return DataRow(cells: [
+          DataCell(Text(entry.key, style: TextStyle(color: Colors.white))),
+          DataCell(Text(categoryData['dateOfIssue'] != null
+              ? formatTimestamp(categoryData['dateOfIssue'])
+              : 'N/A', style: TextStyle(color: Colors.white))),
+          DataCell(Text(categoryData['dateOfExpiry'] != null
+              ? formatTimestamp(categoryData['dateOfExpiry'])
+              : 'N/A', style: TextStyle(color: Colors.white))),
+        ]);
+      }).toList(),
+    ),
+  );
+}
+
+String formatTimestamp(Timestamp? timestamp) {
+  if (timestamp == null) return 'N/A';
+  DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp.seconds * 1000);
+  return DateFormat('dd MMMM yyyy').format(date); // Only show date
 }

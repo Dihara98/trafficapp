@@ -2,26 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
-class SixteenPage extends StatefulWidget {
+class SixteenAndSeventeenPage extends StatefulWidget {
   final String dlNo;
   final String vehicleNo;
   final String contactNo;
   final String placeOffence;
-  final String selectedFine; // Accept the selected fine
+  final String selectedFine;
 
-  SixteenPage({
+  SixteenAndSeventeenPage({
     required this.vehicleNo,
     required this.contactNo,
     required this.dlNo,
     required this.placeOffence,
-    required this.selectedFine, // Accept the selected fine
+    required this.selectedFine,
   });
 
   @override
-  _SixteenPageState createState() => _SixteenPageState();
+  _SixteenAndSeventeenPageState createState() => _SixteenAndSeventeenPageState();
 }
 
-class _SixteenPageState extends State<SixteenPage> {
+class _SixteenAndSeventeenPageState extends State<SixteenAndSeventeenPage> {
   String fullName = '';
   String address = '';
   String dateOfOffence = '';
@@ -35,17 +35,16 @@ class _SixteenPageState extends State<SixteenPage> {
     _getCurrentDateTime();
   }
 
-  // Fetch Name and Address from Firebase using the dlNo
   Future<void> _fetchDrivingLicence() async {
     try {
-      // Query Firestore to find documents with the matching dlNo field
+
       QuerySnapshot driverDoc = await FirebaseFirestore.instance
           .collection('DrivingLicence')
-          .where('dlNo', isEqualTo: widget.dlNo) // Query using the dlNo field
+          .where('dlNo', isEqualTo: widget.dlNo)
           .get();
 
       if (driverDoc.docs.isNotEmpty) {
-        // If documents are found, take the first document
+
         setState(() {
           fullName = driverDoc.docs.first['fullName'];
           address = driverDoc.docs.first['address'];
@@ -56,14 +55,14 @@ class _SixteenPageState extends State<SixteenPage> {
     } catch (e) {
       print('Error fetching driver info: $e');
     } finally {
-      // Always set isLoading to false, whether the document was found or not
+
       setState(() {
         isLoading = false;
       });
     }
   }
 
-  // Get Current Date and Time
+
   void _getCurrentDateTime() {
     DateTime now = DateTime.now();
     setState(() {
@@ -72,7 +71,7 @@ class _SixteenPageState extends State<SixteenPage> {
     });
   }
 
-  // Push the data to Firestore
+
   Future<void> _submitData() async {
     try {
       await FirebaseFirestore.instance.collection('GotFine').add({
@@ -94,7 +93,7 @@ class _SixteenPageState extends State<SixteenPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF074D5E), // Set background color
+      backgroundColor: Color(0xFF074D5E),
       appBar: AppBar(
         title: Text('Confirmation'),
         leading: IconButton(
@@ -113,7 +112,7 @@ class _SixteenPageState extends State<SixteenPage> {
               'Full Name and Address of the Driver:',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Colors.white, // Set text color to white
+                color: Colors.white,
               ),
             ),
             Text(
@@ -188,7 +187,7 @@ class _SixteenPageState extends State<SixteenPage> {
                   'CONFIRM',
                   style: TextStyle(
                     fontSize: 18,
-                    color: Colors.black, // Black bold text
+                    color: Colors.black, 
                     fontWeight: FontWeight.bold,
                   ),
                 ),

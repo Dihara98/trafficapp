@@ -71,8 +71,13 @@ class _FifteenPageState extends State<FifteenPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
+<<<<<<< Updated upstream
         builder: (context) => SixteenAndSeventeenPage(
           dlNo: widget.dlNo,
+=======
+        builder: (context) => SixteenAndSeventeenPagePage(
+          dlNo: widget.dlNo, // Use widget.dlNo
+>>>>>>> Stashed changes
           selectedFine: _selectedItem!,
           vehicleNo: vehicleNo,
           contactNo: contactNo,

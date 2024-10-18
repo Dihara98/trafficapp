@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // For Firestore
-import 'eleventh_twelveth_page.dart'; // Import the EleventhPage
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class TenthPage extends StatefulWidget {
   final String vehicleNumber;
@@ -12,13 +12,11 @@ class TenthPage extends StatefulWidget {
 }
 
 class _TenthPageState extends State<TenthPage> {
-  // Data to hold the vehicle details
   Map<String, dynamic>? vehicleDetails;
   Map<String, dynamic>? revenueLicenseDetails;
   Map<String, dynamic>? insuranceDetails;
   String? errorMessage;
 
-  // Initial fetch of vehicle details
   @override
   void initState() {
     super.initState();
@@ -29,191 +27,71 @@ class _TenthPageState extends State<TenthPage> {
 
   Future<void> _fetchVehicleDetails() async {
     try {
-      // Query Firestore to retrieve vehicle data
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('Vehicles') // Replace with your Firestore collection
-          .where('vehicleNumber', isEqualTo: widget.vehicleNumber)
+          .collection('VehicleDetails')
+          .where('vehicleNo', isEqualTo: widget.vehicleNumber)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
         setState(() {
           vehicleDetails = querySnapshot.docs.first.data() as Map<String, dynamic>;
-          errorMessage = null; // Clear the error message if data is found
         });
       } else {
         setState(() {
           vehicleDetails = null;
-          errorMessage = 'No vehicle details found.';
         });
       }
     } catch (e) {
       setState(() {
-        errorMessage = 'Error retrieving data: $e';
-        vehicleDetails = null;
+        errorMessage = 'Error retrieving vehicle details: $e';
       });
     }
   }
 
   Future<void> _fetchRevenueLicenseDetails() async {
     try {
-      // Query Firestore to retrieve vehicle data
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('RevenueLicence') // Replace with your Firestore collection
-          .where('vehicleNumber', isEqualTo: widget.vehicleNumber)
+          .collection('RevenueLicence')
+          .where('vehicleNo', isEqualTo: widget.vehicleNumber)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
         setState(() {
           revenueLicenseDetails = querySnapshot.docs.first.data() as Map<String, dynamic>;
-          errorMessage = null; // Clear the error message if data is found
         });
       } else {
         setState(() {
           revenueLicenseDetails = null;
-          errorMessage = 'No revenue license details found.';
         });
       }
     } catch (e) {
       setState(() {
-        errorMessage = 'Error retrieving data: $e';
-        revenueLicenseDetails = null;
+        errorMessage = 'Error retrieving revenue license details: $e';
       });
     }
   }
 
   Future<void> _fetchInsuranceDetails() async {
     try {
-      // Query Firestore to retrieve vehicle data
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('Insurance') // Replace with your Firestore collection
-          .where('vehicleNumber', isEqualTo: widget.vehicleNumber)
+          .collection('Insuarance')
+          .where('vehicleNo', isEqualTo: widget.vehicleNumber)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
         setState(() {
           insuranceDetails = querySnapshot.docs.first.data() as Map<String, dynamic>;
-          errorMessage = null; // Clear the error message if data is found
         });
       } else {
         setState(() {
           insuranceDetails = null;
-          errorMessage = 'No insurance details found.';
         });
       }
     } catch (e) {
       setState(() {
-        errorMessage = 'Error retrieving data: $e';
-        insuranceDetails = null;
+        errorMessage = 'Error retrieving insurance details: $e';
       });
     }
-  }
-
-  // Function to display vehicle details
-  void _showVehicleDetails() {
-    // Display vehicle details from 'vehicleDetails' in a new page or dialog
-    // Example:
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Vehicle Details'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (vehicleDetails != null)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Display vehicle details from 'vehicleDetails'
-                  _buildDataField('Registration Number', vehicleDetails!['vehicleNumber']),
-                  _buildDataField('Model', vehicleDetails!['model']),
-                  // ... Add other fields as needed
-                ],
-              )
-            else
-              Text('No vehicle details found.'),
-          ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Function to display revenue license details (similar to _showVehicleDetails)
-  void _showRevenueLicenseDetails() {
-    // Display revenue license details from 'vehicleDetails'
-    // Example:
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Revenue License Details'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (revenueLicenseDetails != null)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Display revenue license details from 'vehicleDetails'
-                  _buildDataField('License Number', revenueLicenseDetails!['revenueLicenseNumber']),
-                  _buildDataField('Expiry Date', revenueLicenseDetails!['revenueLicenseExpiry']),
-                  // ... Add other fields as needed
-                ],
-              )
-            else
-              Text('No revenue license details found.'),
-          ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Function to display insurance details (similar to _showVehicleDetails)
-  void _showInsuranceDetails() {
-    // Display insurance details from 'vehicleDetails'
-    // Example:
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Insurance Details'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (insuranceDetails != null)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Display insurance details from 'vehicleDetails'
-                  _buildDataField('Policy Number', insuranceDetails!['insurancePolicyNumber']),
-                  _buildDataField('Expiry Date', insuranceDetails!['insuranceExpiry']),
-                  // ... Add other fields as needed
-                ],
-              )
-            else
-              Text('No insurance details found.'),
-          ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Close'),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildDataField(String label, dynamic value) {
@@ -234,7 +112,7 @@ class _TenthPageState extends State<TenthPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context); // Go back to the previous page
+            Navigator.pop(context);
           },
         ),
         backgroundColor: Color(0xFF1b4a56),
@@ -244,94 +122,121 @@ class _TenthPageState extends State<TenthPage> {
         ),
         centerTitle: true,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to the EleventhPage (combined details page)
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EleventhPage(vehicleNumber: widget.vehicleNumber), // Pass the vehicle number
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber,
-                padding: EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text(
-                'Vehicle Details',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+
+            _buildSectionCard(
+              title: "Vehicle Details",
+              details: vehicleDetails,
+              fields: [
+                _buildDataField("Registration Number", vehicleDetails?['vehicleNo']),
+                _buildDataField("Name of the current owner", vehicleDetails?['fullName']),
+                _buildDataField("Address of the current owner", vehicleDetails?['address']),
+                _buildDataField("Engine number", vehicleDetails?['engineNo']),
+                _buildDataField("Vehicle class", vehicleDetails?['vehicleClass']),
+                _buildDataField("Conditions and notes", vehicleDetails?['conditionsAndNotes']),
+                _buildDataField("Make", vehicleDetails?['make']),
+                _buildDataField("Year of manufacture", vehicleDetails?['yearOfManufacture']),
+                _buildDataField("Date of registration", formatTimestamp(vehicleDetails?['dateOfRegistrationVehicle'])),
+                _buildDataField("Engine capacity", vehicleDetails?['engineCapacity']),
+                _buildDataField("Fuel type", vehicleDetails?['fuelType']),
+                _buildDataField("Status when registered", vehicleDetails?['status']),
+                _buildDataField("CR Type", vehicleDetails?['crType']),
+                _buildDataField("Type of Body", vehicleDetails?['typeOfBody']),
+
+              ],
             ),
+
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to the EleventhPage (combined details page)
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EleventhPage(vehicleNumber: widget.vehicleNumber), // Pass the vehicle number
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber,
-                padding: EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text(
-                'Revenue Licence',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+
+            _buildSectionCard(
+              title: "Revenue License Details",
+              details: revenueLicenseDetails,
+              fields: [
+                _buildDataField("Vehicle Number", revenueLicenseDetails?['vehicleNo']),
+                _buildDataField("Owner’s Name", revenueLicenseDetails?['ownerName']),
+                _buildDataField("User Location", revenueLicenseDetails?['userLocation']),
+                _buildDataField("Reference Number", revenueLicenseDetails?['referenceNumber']),
+                _buildDataField("License Duration", revenueLicenseDetails?['licenseDuration']),
+                _buildDataField("Amount", revenueLicenseDetails?['amount']),
+                _buildDataField("Payment Type", revenueLicenseDetails?['paymentType']),
+                _buildDataField("Approval Code", revenueLicenseDetails?['approvalCode']),
+
+              ],
             ),
+
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to the EleventhPage (combined details page)
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EleventhPage(vehicleNumber: widget.vehicleNumber), // Pass the vehicle number
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber,
-                padding: EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text(
-                'Insurance',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+
+            // Insurance Details Section
+            _buildSectionCard(
+              title: "Insurance Details",
+              details: insuranceDetails,
+              fields: [
+                _buildDataField("Vehicle Number", insuranceDetails?['vehicleNo']),
+                _buildDataField("Policy Number", insuranceDetails?['policyNo']),
+                _buildDataField("Period of Cover", _buildPeriodOfCover()),
+                _buildDataField("Policy Holder", insuranceDetails?['fullName']),
+                _buildDataField("Address", insuranceDetails?['address']),
+                _buildDataField("Issued Date", formatTimestamp(insuranceDetails?['dateOfIssueInsuarance'])),
+                _buildDataField("Contract Type", insuranceDetails?['contractType']),
+                _buildDataField("Vehicle Use", insuranceDetails?['vehicleUse']),
+              ],
             ),
           ],
         ),
       ),
     );
   }
+
+  Widget _buildSectionCard({required String title, Map<String, dynamic>? details, required List<Widget> fields}) {
+    return Card(
+      color: Color(0xFF12343b),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: ExpansionTile(
+        title: Text(
+          title,
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: details != null
+                ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: fields)
+                : Text("No details found", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+  String formatTimestamp(Timestamp? timestamp) {
+    if (timestamp == null) return 'N/A';
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp.seconds * 1000);
+    return DateFormat('dd MMMM yyyy').format(date);
+  }
+
+
+  String _buildPeriodOfCover() {
+    if (insuranceDetails != null) {
+      Timestamp? fromTimestamp = insuranceDetails!['from'];
+      Timestamp? toTimestamp = insuranceDetails!['to'];
+
+      if (fromTimestamp != null && toTimestamp != null) {
+        DateTime fromDate = fromTimestamp.toDate();
+        DateTime toDate = toTimestamp.toDate();
+
+        String formattedFrom = DateFormat('dd MMMM yyyy').format(fromDate);
+        String formattedTo = DateFormat('dd MMMM yyyy').format(toDate);
+
+        return '$formattedFrom - $formattedTo';
+      }
+    }
+    return 'N/A';
+  }
+
 }

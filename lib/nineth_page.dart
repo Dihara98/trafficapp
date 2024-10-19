@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'tenth_page.dart';
 
 class NinethPage extends StatefulWidget {
+  final String dlNo;
+  NinethPage({required this.dlNo});
   @override
   _NinthPageState createState() => _NinthPageState();
 }
@@ -60,12 +62,12 @@ class _NinthPageState extends State<NinethPage> {
               SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
-                  String vehicleNumber = _vehicleController.text.trim();
+                  String vehicleNo = _vehicleController.text.trim();
                   // Navigate to the vehicle details page
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => TenthPage(vehicleNumber: vehicleNumber),
+                      builder: (context) => TenthPage(vehicleNo: vehicleNo),
                     ),
                   );
                 },

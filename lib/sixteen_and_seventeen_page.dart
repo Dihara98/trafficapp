@@ -3,15 +3,19 @@ import 'package:cloud_firestore/cloud_firestore.dart'; // Firebase Firestore pac
 import 'package:intl/intl.dart';
 import 'eighteenth_page.dart';
 
-class SixteenAndSeventeenPagePage extends StatefulWidget {
+class SixteenAndSeventeenPage extends StatefulWidget {
   final String dlNo;
   final String vehicleNo;
+  //final String fullName;
+  //final String address;
   final String contactNo;
   final String placeOffence;
   final String selectedFine; // Accept the selected fine
 
-  SixteenAndSeventeenPagePage({
+  SixteenAndSeventeenPage({
     required this.vehicleNo,
+   // required this.fullName,
+   // required this.address,
     required this.contactNo,
     required this.dlNo,
     required this.placeOffence,
@@ -22,19 +26,21 @@ class SixteenAndSeventeenPagePage extends StatefulWidget {
   _SixteenPageState createState() => _SixteenPageState();
 }
 
-class _SixteenPageState extends State<SixteenAndSeventeenPagePage> {
-  String fullName = '';
-  String address = '';
+class _SixteenPageState extends State<SixteenAndSeventeenPage> {
+  String fullName= '';
+  String address= '';
   String dateOfOffence = '';
   String timeOfOffence = '';
   String courtDate = '';
   bool isLoading = true;
+  late String vehicleNo;
 
   @override
   void initState() {
     super.initState();
     _fetchDrivingLicence();
     _getCurrentDateTime();
+    _fetchVehicleDetails();
   }
 
   // Fetch Name and Address from Firebase using the dlNo
@@ -51,6 +57,33 @@ class _SixteenPageState extends State<SixteenAndSeventeenPagePage> {
         setState(() {
           fullName = driverDoc.docs.first['fullName'];
           address = driverDoc.docs.first['address'];
+        });
+      } else {
+        print('Driver not found!');
+      }
+    } catch (e) {
+      print('Error fetching driver info: $e');
+    } finally {
+      // Always set isLoading to false, whether the document was found or not
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+
+  Future<void> _fetchVehicleDetails() async {
+    try {
+      // Query Firestore to find documents with the matching dlNo field
+      QuerySnapshot vehicleDoc = await FirebaseFirestore.instance
+          .collection('VehicleDetails')
+          .where('VehicleNo', isEqualTo: widget.vehicleNo) // Query using the dlNo field
+          .get();
+
+      if (vehicleDoc.docs.isNotEmpty) {
+        // If documents are found, take the first document
+        setState(() {
+          vehicleNo = vehicleDoc.docs.first['vehicleNo'];
         });
       } else {
         print('Driver not found!');
@@ -83,6 +116,7 @@ class _SixteenPageState extends State<SixteenAndSeventeenPagePage> {
       await FirebaseFirestore.instance.collection('GotFine').add({
         'fullName': fullName,
         'address': address,
+        'dlNo': widget.dlNo,
         'vehicleNo': widget.vehicleNo,
         'contactNo': widget.contactNo,
         'placeOffence': widget.placeOffence,
@@ -143,6 +177,15 @@ class _SixteenPageState extends State<SixteenAndSeventeenPagePage> {
               ),
             ),
             Text(widget.vehicleNo, style: TextStyle(color: Colors.white)),
+            SizedBox(height: 16),
+            Text(
+              'Driving No:',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            Text(widget.dlNo, style: TextStyle(color: Colors.white)),
             SizedBox(height: 16),
             Text(
               'Date of Offence:',

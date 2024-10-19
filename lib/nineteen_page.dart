@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Firebase Firestore package
+import 'package:cloud_firestore/cloud_firestore.dart'; // For Firestore
 import 'package:firebase_auth/firebase_auth.dart';
-import 'twenty_page.dart';
+import 'package:sltrafficapp/twenty_page.dart';
+import 'package:sltrafficapp/signup_page.dart'; // Import the SignupPage
+//import 'package:bcrypt/bcrypt.dart' as bcrypt; // Import the bcrypt package
 
 class NineteenPage extends StatefulWidget {
   @override
@@ -25,7 +27,7 @@ class _NineteenPageState extends State<NineteenPage> {
     String password = _passwordController.text;
 
     try {
-
+      // Get the user data from Firestore
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('Driver')
           .where('userName', isEqualTo: username)
@@ -42,13 +44,13 @@ class _NineteenPageState extends State<NineteenPage> {
 
       var userData = querySnapshot.docs[0].data() as Map<String, dynamic>;
 
-
-      if (userData['password'] == password) {
-
+      // Compare the entered password with the hashed password in Firestore
+      //if (await bcrypt.checkpw(password.codeUnits, userData['password'] as String)) { // Use bcrypt.checkpw for comparison
+      if (password == userData['password']) {
+      // Passwords match - proceed with login
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => TwentyPage(userData: userData)),
-
         );
       } else {
         setState(() {
@@ -74,7 +76,6 @@ class _NineteenPageState extends State<NineteenPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-
               Image.asset('assets/logo.png', height: 80),
               SizedBox(height: 20),
               Text(
@@ -154,7 +155,11 @@ class _NineteenPageState extends State<NineteenPage> {
               // Sign Up link
               GestureDetector(
                 onTap: () {
-                  // Handle sign-up navigation
+                  // Navigate to the SignupPage
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignupPage()),
+                  );
                 },
                 child: Text(
                   'Don\'t have an account? Sign up',
@@ -171,4 +176,3 @@ class _NineteenPageState extends State<NineteenPage> {
     );
   }
 }
-

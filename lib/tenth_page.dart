@@ -5,9 +5,9 @@ import 'fifteen_page.dart';
 
 class TenthPage extends StatefulWidget {
   final String vehicleNo;
-  String dlNo = '';
+  final String dlNo;
 
-  TenthPage({required this.vehicleNo});
+  TenthPage({required this.vehicleNo, required this.dlNo});
 
   @override
   _TenthPageState createState() => _TenthPageState();

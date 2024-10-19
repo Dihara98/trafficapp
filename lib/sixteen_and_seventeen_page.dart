@@ -6,20 +6,16 @@ import 'eighteenth_page.dart';
 class SixteenAndSeventeenPage extends StatefulWidget {
   final String dlNo;
   final String vehicleNo;
-  //final String fullName;
-  //final String address;
   final String contactNo;
   final String placeOffence;
-  final String selectedFine; // Accept the selected fine
+  final String selectedFineId; // Accept the selected fine
 
   SixteenAndSeventeenPage({
     required this.vehicleNo,
-   // required this.fullName,
-   // required this.address,
     required this.contactNo,
     required this.dlNo,
     required this.placeOffence,
-    required this.selectedFine, // Accept the selected fine
+    required this.selectedFineId,
   });
 
   @override
@@ -34,6 +30,7 @@ class _SixteenPageState extends State<SixteenAndSeventeenPage> {
   String courtDate = '';
   bool isLoading = true;
   late String vehicleNo;
+  String? fineName;
 
   @override
   void initState() {
@@ -41,6 +38,7 @@ class _SixteenPageState extends State<SixteenAndSeventeenPage> {
     _fetchDrivingLicence();
     _getCurrentDateTime();
     _fetchVehicleDetails();
+    _fetchFineName();
   }
 
   // Fetch Name and Address from Firebase using the dlNo
@@ -98,6 +96,26 @@ class _SixteenPageState extends State<SixteenAndSeventeenPage> {
     }
   }
 
+  Future<void> _fetchFineName() async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('Fines')
+          .where('fineId', isEqualTo: widget.selectedFineId)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        setState(() {
+          fineName = querySnapshot.docs.first['fineName'];
+        });
+      }
+    } catch (e) {
+      setState(() {
+        fineName = 'Error retrieving fine name';
+      });
+    }
+  }
+
+
   // Get Current Date and Time
   void _getCurrentDateTime() {
     DateTime now = DateTime.now();
@@ -120,7 +138,7 @@ class _SixteenPageState extends State<SixteenAndSeventeenPage> {
         'vehicleNo': widget.vehicleNo,
         'contactNo': widget.contactNo,
         'placeOffence': widget.placeOffence,
-        'selectedFine': widget.selectedFine,
+        'selectedFine': widget.selectedFineId,
         'dateOfOffence': dateOfOffence,
         'timeOfOffence': timeOfOffence,
         'courtDate': courtDate
@@ -214,6 +232,7 @@ class _SixteenPageState extends State<SixteenAndSeventeenPage> {
             ),
             Text(widget.placeOffence, style: TextStyle(color: Colors.white)),
             SizedBox(height: 16),
+
             Text(
               'Nature of Offence:',
               style: TextStyle(
@@ -221,7 +240,12 @@ class _SixteenPageState extends State<SixteenAndSeventeenPage> {
                 color: Colors.white,
               ),
             ),
-            Text(widget.selectedFine, style: TextStyle(color: Colors.white)),
+            Text(
+              fineName != null ? fineName! : '', // Display the fine name or an empty string if null
+              style: TextStyle(color: Colors.white),
+            ),
+
+
             SizedBox(height: 16),
             Text(
               'Contact No:',

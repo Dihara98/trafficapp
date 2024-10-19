@@ -4,9 +4,10 @@ import 'package:intl/intl.dart';
 import 'nineth_page.dart';
 
 class DrivingLicensePage extends StatefulWidget {
-  final String licenseNumber;
+  final String dlNo;
 
-  DrivingLicensePage({required this.licenseNumber});
+
+  DrivingLicensePage({required this.dlNo});
 
   @override
   _DrivingLicensePageState createState() => _DrivingLicensePageState();
@@ -27,7 +28,7 @@ class _DrivingLicensePageState extends State<DrivingLicensePage> {
 
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('DrivingLicence')
-          .where('dlNo', isEqualTo: widget.licenseNumber)
+          .where('dlNo', isEqualTo: widget.dlNo)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
@@ -93,7 +94,7 @@ class _DrivingLicensePageState extends State<DrivingLicensePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildDataField('Driving License Number', widget.licenseNumber),
+                        _buildDataField('Driving License Number', widget.dlNo),
                         _buildDataField('NIC No', driverDetails!['NIC']),
                         _buildDataField('Full Name', driverDetails!['fullName']),
                         _buildDataField('Address', driverDetails!['address']),
@@ -119,7 +120,7 @@ class _DrivingLicensePageState extends State<DrivingLicensePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => NinethPage(),
+                    builder: (context) => NinethPage(dlNo: widget.dlNo),
                   ),
                 );
               },

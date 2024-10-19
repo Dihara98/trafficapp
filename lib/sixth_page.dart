@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'sevength_and_eighth_page.dart';
 
 class SixthPage extends StatelessWidget {
-  final TextEditingController _licenseController = TextEditingController();
+  final TextEditingController _dlNoController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class SixthPage extends StatelessWidget {
             ),
             SizedBox(height: 10),
             TextField(
-              controller: _licenseController,
+              controller: _dlNoController,
               decoration: InputDecoration(
                 hintText: 'Enter your driving license number',
                 hintStyle: TextStyle(color: Colors.white70),
@@ -57,11 +57,11 @@ class SixthPage extends StatelessWidget {
             SizedBox(height: 30),
             ElevatedButton(
               onPressed: () {
-                String licenseNumber = _licenseController.text.trim();
+                String dlNo = _dlNoController.text.trim();
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DrivingLicensePage(licenseNumber: licenseNumber),
+                    builder: (context) => DrivingLicensePage(dlNo: dlNo),
                   ),
                 );
               },

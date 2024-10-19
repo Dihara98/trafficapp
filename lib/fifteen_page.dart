@@ -13,20 +13,23 @@ class FifteenPage extends StatefulWidget {
 }
 
 class _FifteenPageState extends State<FifteenPage> {
- // final TextEditingController _vehicleNo = TextEditingController();
   final TextEditingController _contactNo = TextEditingController();
   final TextEditingController _placeOffence = TextEditingController();
-  String? _selectedItem;
+  //String? _selectedItem;
+  String? _selectedFineId;
   String? _errorMessage;
   Map<String, dynamic>? driverDetails;
   Map<String, dynamic>? vehicleDetails;
   String? errorMessage;
+
+  List<Map<String, dynamic>> fines = [];
 
   @override
   void initState() {
     super.initState();
     _fetchDriverDetails();
     _fetchVehicleDetails();
+    _fetchFines();
   }
 
   Future<void> _fetchDriverDetails() async {
@@ -87,13 +90,34 @@ class _FifteenPageState extends State<FifteenPage> {
     }
   }
 
+  Future<void> _fetchFines() async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('Fines')
+          .get();
+
+      setState(() {
+        fines = querySnapshot.docs.map((doc) {
+          return {
+            'fineId': doc['fineId'],
+            'fineName': doc['fineName'],
+          };
+        }).toList();
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error retrieving fines: $e';
+      });
+    }
+  }
+
 
   void _goToNextPage() {
     //String vehicleNo = _vehicleNo.text;
     String contactNo = _contactNo.text;
     String placeOffence = _placeOffence.text;
 
-    if (_selectedItem == null || contactNo.isEmpty || placeOffence.isEmpty) {
+    if (_selectedFineId == null || contactNo.isEmpty || placeOffence.isEmpty) {
       setState(() {
         _errorMessage = 'Please fill all fields';
       });
@@ -108,7 +132,7 @@ class _FifteenPageState extends State<FifteenPage> {
         builder: (context) => SixteenAndSeventeenPage(
           dlNo: widget.dlNo,
           vehicleNo: widget.vehicleNo,
-          selectedFine: _selectedItem!,
+          selectedFineId: _selectedFineId!,
           contactNo: contactNo,
           placeOffence: placeOffence,
         ),
@@ -142,29 +166,17 @@ class _FifteenPageState extends State<FifteenPage> {
                 filled: true,
                 fillColor: Colors.white24,
               ),
-              items: const [
-                DropdownMenuItem(
-                  child: Text("1. Identification Plates"),
-                  value: "1",
-                ),
-                DropdownMenuItem(
-                  child: Text("2. Not Carrying R.L"),
-                  value: "2",
-                ),
-                DropdownMenuItem(
-                  child: Text("3. Contravening R.L provisions"),
-                  value: "3",
-                ),
-                DropdownMenuItem(
-                  child: Text("4. Driving Emergency Service Vehicles & Public Service Vehicles without D.L."),
-                  value: "4",
-                ),
-              ],
               onChanged: (value) {
                 setState(() {
-                  _selectedItem = value;
+                  _selectedFineId = value;
                 });
               },
+              items: fines.map<DropdownMenuItem<String>>((fine) {
+                return DropdownMenuItem<String>(
+                  value: fine['fineId'].toString(),
+                  child: Text(fine['fineName']),
+                );
+              }).toList(),
             ),
             const SizedBox(height: 20),
             /*TextField(

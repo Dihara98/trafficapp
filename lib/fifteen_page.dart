@@ -4,26 +4,29 @@ import 'sixteen_and_seventeen_page.dart';
 
 class FifteenPage extends StatefulWidget {
   final String dlNo;
+  final String vehicleNo;
 
-  FifteenPage({required this.dlNo});
+  FifteenPage({required this.dlNo, required this.vehicleNo});
 
   @override
   _FifteenPageState createState() => _FifteenPageState();
 }
 
 class _FifteenPageState extends State<FifteenPage> {
-  final TextEditingController _vehicleNo = TextEditingController();
+ // final TextEditingController _vehicleNo = TextEditingController();
   final TextEditingController _contactNo = TextEditingController();
   final TextEditingController _placeOffence = TextEditingController();
   String? _selectedItem;
   String? _errorMessage;
   Map<String, dynamic>? driverDetails;
+  Map<String, dynamic>? vehicleDetails;
   String? errorMessage;
 
   @override
   void initState() {
     super.initState();
     _fetchDriverDetails();
+    _fetchVehicleDetails();
   }
 
   Future<void> _fetchDriverDetails() async {
@@ -55,12 +58,42 @@ class _FifteenPageState extends State<FifteenPage> {
   }
 
 
+
+  Future<void> _fetchVehicleDetails() async {
+    try {
+
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('VehicleDetails')
+          .where('vehicleNo', isEqualTo: widget.vehicleNo)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        setState(() {
+
+          vehicleDetails = querySnapshot.docs.first.data() as Map<String, dynamic>?;
+          errorMessage = null;
+        });
+      } else {
+        setState(() {
+          vehicleDetails = null;
+          errorMessage = 'No details found for the entered Vehicle Number.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = 'Error retrieving data: $e';
+        driverDetails = null;
+      });
+    }
+  }
+
+
   void _goToNextPage() {
-    String vehicleNo = _vehicleNo.text;
+    //String vehicleNo = _vehicleNo.text;
     String contactNo = _contactNo.text;
     String placeOffence = _placeOffence.text;
 
-    if (_selectedItem == null || vehicleNo.isEmpty || contactNo.isEmpty || placeOffence.isEmpty) {
+    if (_selectedItem == null || contactNo.isEmpty || placeOffence.isEmpty) {
       setState(() {
         _errorMessage = 'Please fill all fields';
       });
@@ -71,15 +104,11 @@ class _FifteenPageState extends State<FifteenPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-<<<<<<< Updated upstream
+
         builder: (context) => SixteenAndSeventeenPage(
           dlNo: widget.dlNo,
-=======
-        builder: (context) => SixteenAndSeventeenPagePage(
-          dlNo: widget.dlNo, // Use widget.dlNo
->>>>>>> Stashed changes
+          vehicleNo: widget.vehicleNo,
           selectedFine: _selectedItem!,
-          vehicleNo: vehicleNo,
           contactNo: contactNo,
           placeOffence: placeOffence,
         ),
@@ -138,7 +167,7 @@ class _FifteenPageState extends State<FifteenPage> {
               },
             ),
             const SizedBox(height: 20),
-            TextField(
+            /*TextField(
               controller: _vehicleNo,
               decoration: InputDecoration(
                 labelText: 'Vehicle Number',
@@ -148,7 +177,7 @@ class _FifteenPageState extends State<FifteenPage> {
               ),
               keyboardType: TextInputType.text,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 20),*/
             TextField(
               controller: _contactNo,
               decoration: InputDecoration(

@@ -70,7 +70,7 @@ class DrivingLicencePage extends StatelessWidget {
     );
   }
 }
-
+/*
 class VehicleNumberPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -79,4 +79,4 @@ class VehicleNumberPage extends StatelessWidget {
       body: Center(child: Text('Vehicle Number Page')),
     );
   }
-}
+}*/

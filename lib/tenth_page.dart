@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'fifteen_page.dart';
 
 class TenthPage extends StatefulWidget {
-  final String vehicleNumber;
+  final String vehicleNo;
+  String dlNo = '';
 
-  TenthPage({required this.vehicleNumber});
+  TenthPage({required this.vehicleNo});
 
   @override
   _TenthPageState createState() => _TenthPageState();
@@ -29,7 +31,7 @@ class _TenthPageState extends State<TenthPage> {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('VehicleDetails')
-          .where('vehicleNo', isEqualTo: widget.vehicleNumber)
+          .where('vehicleNo', isEqualTo: widget.vehicleNo)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
@@ -52,7 +54,7 @@ class _TenthPageState extends State<TenthPage> {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('RevenueLicence')
-          .where('vehicleNo', isEqualTo: widget.vehicleNumber)
+          .where('vehicleNo', isEqualTo: widget.vehicleNo)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
@@ -75,7 +77,7 @@ class _TenthPageState extends State<TenthPage> {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('Insuarance')
-          .where('vehicleNo', isEqualTo: widget.vehicleNumber)
+          .where('vehicleNo', isEqualTo: widget.vehicleNo)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
@@ -185,6 +187,33 @@ class _TenthPageState extends State<TenthPage> {
                 _buildDataField("Contract Type", insuranceDetails?['contractType']),
                 _buildDataField("Vehicle Use", insuranceDetails?['vehicleUse']),
               ],
+            ),
+            // "FINES" Button
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to the fifteen.dart page (you'll need to create this page)
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FifteenPage(dlNo: widget.dlNo,vehicleNo: widget.vehicleNo),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.black,
+                backgroundColor: Colors.yellow, // Text color
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: EdgeInsets.symmetric(vertical: 16),
+              ),
+              child: Text(
+                'FINES',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         ),

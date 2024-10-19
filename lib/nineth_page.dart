@@ -67,7 +67,7 @@ class _NinthPageState extends State<NinethPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => TenthPage(vehicleNo: vehicleNo),
+                      builder: (context) => TenthPage(vehicleNo: vehicleNo, dlNo: widget.dlNo),
                     ),
                   );
                 },

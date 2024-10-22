@@ -1,106 +1,129 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sltrafficapp/twenty_six_page.dart';
 
-class TwentyFourthPage extends StatelessWidget {
-  final String vehicleNo;
+class TwentyFivePage extends StatefulWidget {
+  @override
+  _TwentyFivePageState createState() => _TwentyFivePageState();
+}
 
-  TwentyFourthPage({required this.vehicleNo});
+class _TwentyFivePageState extends State<TwentyFivePage> {
+  final TextEditingController vehicleController = TextEditingController();
+  final TextEditingController chassisController = TextEditingController();
 
-  Future<Map<String, dynamic>?> _fetchVehicleDetails() async {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<void> _validateAndNavigate() async {
+    String vehicleNo = vehicleController.text.trim();
+    String chassisNo = chassisController.text.trim();
+
+    if (vehicleNo.isEmpty || chassisNo.isEmpty) {
+      _showErrorDialog('Please fill in both fields.');
+      return;
+    }
+
+    // Query Firestore for matching document
     try {
-
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('VehicleDetails')
+      var querySnapshot = await _firestore
+          .collection('RevenueLicence')
           .where('vehicleNo', isEqualTo: vehicleNo)
+          .where('chassisNo', isEqualTo: chassisNo)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
-        return querySnapshot.docs.first.data() as Map<String, dynamic>?;
+
+        _navigateToNextPage(vehicleNo);
       } else {
-        return null;
+        _showErrorDialog('No matching vehicle found.');
       }
     } catch (e) {
-      print('Error fetching vehicle details: $e');
-      return null;
+      _showErrorDialog('Error fetching data: $e');
     }
+  }
+
+  void _navigateToNextPage(String vehicleNo) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TwentySixPage(vehicleNo: vehicleNo),
+      ),
+    );
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF074D5E),
       appBar: AppBar(
-        backgroundColor: Color(0xFF074D5E),
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.of(context).pop();
           },
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Image.asset('assets/logo.png', width: 40),
-          ),
-        ],
       ),
-      body: FutureBuilder<Map<String, dynamic>?>(
-        future: _fetchVehicleDetails(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                'Error fetching vehicle details',
-                style: TextStyle(color: Colors.red, fontSize: 16),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            TextField(
+              controller: vehicleController,
+              decoration: const InputDecoration(
+                labelText: 'Vehicle Registration Number',
+                labelStyle: TextStyle(color: Colors.white),
+                filled: true,
+                fillColor: Colors.white24,
               ),
-            );
-          }
-
-          if (!snapshot.hasData || snapshot.data == null) {
-            return Center(
-              child: Text(
-                'No details found for this vehicle number',
-                style: TextStyle(color: Colors.white, fontSize: 18),
-              ),
-            );
-          }
-
-
-          Map<String, dynamic> vehicleDetails = snapshot.data!;
-
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildDetailField('Vehicle Registration No', vehicleDetails['vehicleNo']),
-                _buildDetailField('Engine Number', vehicleDetails['engineNo']),
-                _buildDetailField('Vehicle Class', vehicleDetails['vehicleClass']),
-                _buildDetailField('Conditions and Notes', vehicleDetails['conditionsAndNotes']),
-                _buildDetailField('Make', vehicleDetails['make']),
-                _buildDetailField('Model', vehicleDetails['model']),
-                _buildDetailField('Year of Manufacture', vehicleDetails['yearOfManufacture']),
-              ],
             ),
-          );
-        },
+            const SizedBox(height: 20),
+            TextField(
+              controller: chassisController,
+              decoration: const InputDecoration(
+                labelText: 'Chassis Number (Last Six Characters)',
+                labelStyle: TextStyle(color: Colors.white),
+                filled: true,
+                fillColor: Colors.white24,
+              ),
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFE6A500), // Yellow color
+                padding: const EdgeInsets.symmetric(vertical: 15),
+              ),
+              onPressed: _validateAndNavigate,
+              child: const Text(
+                'SUBMIT',
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
+          ],
+        ),
       ),
-    );
-  }
-
-
-  Widget _buildDetailField(String label, String? value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Text(
-        '$label: ${value ?? 'N/A'}',
-        style: TextStyle(fontSize: 16, color: Colors.white),
-      ),
+      backgroundColor: const Color(0xFF074D5E), // Dark blue background
     );
   }
 }

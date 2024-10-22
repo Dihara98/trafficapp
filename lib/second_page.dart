@@ -20,7 +20,8 @@ class SecondPage extends StatelessWidget {
             // Police Button
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 20.0), backgroundColor: Colors.amber, // background color for button
+                padding: const EdgeInsets.symmetric(vertical: 20.0),
+                backgroundColor: Colors.amber, // background color for button
                 minimumSize: const Size(double.infinity, 80), // full-width button
               ),
               onPressed: () {
@@ -28,13 +29,15 @@ class SecondPage extends StatelessWidget {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => ThirdPage()));
               },
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Replace Icon with Image.asset
-                  Image.asset(
-                    'assets/police_loginlogo.jpg',
+                Padding(padding: const EdgeInsets.only(left: 20.0),
+                  child: Image.asset(
+                    'assets/police_loginlogo.png',
                     width: 50,  // Set width to match the size of the original icon
                     height: 50, // Set height
                   ),
+                ),
                   const SizedBox(width: 20),
                   const Text(
                     'Police',
@@ -48,7 +51,8 @@ class SecondPage extends StatelessWidget {
             // Driver Button
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 20.0), backgroundColor: Colors.amber, // background color for button
+                padding: const EdgeInsets.symmetric(vertical: 20.0),
+                backgroundColor: Colors.amber, // background color for button
                 minimumSize: const Size(double.infinity, 80), // full-width button
               ),
               onPressed: () {
@@ -56,13 +60,15 @@ class SecondPage extends StatelessWidget {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => NineteenPage()));
               },
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Replace Icon with Image.asset
-                  Image.asset(
-                    'assets/driver_loginlogo.jpg',
-                    width: 50,  // Set width to match the size of the original icon
-                    height: 50, // Set height
+                Padding(padding: const EdgeInsets.only(left: 20.0),
+                  child: Image.asset(
+                    'assets/driver_loginlogo.png',
+                    width: 50,
+                    height: 50,
                   ),
+                ),
                   const SizedBox(width: 20),
                   const Text(
                     'Driver',
@@ -79,29 +85,4 @@ class SecondPage extends StatelessWidget {
     );
   }
 }
-/*
-// Dummy PolicePage
-class PolicePage extends StatelessWidget {
-  const PolicePage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Police Page")),
-      body: const Center(child: Text("Police Dashboard")),
-    );
-  }
-}*/
-
-// Dummy DriverPage
-class DriverPage extends StatelessWidget {
-  const DriverPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Driver Page")),
-      body: const Center(child: Text("Driver Dashboard")),
-    );
-  }
-}

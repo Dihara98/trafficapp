@@ -13,7 +13,7 @@ class FirstPageState extends State<FirstPage> {
   @override
   void initState() {
     super.initState();
-    // Navigate to SixthPage after 10 seconds or any other page
+    // Navigate to SecondPage after 10 seconds
     Timer(const Duration(seconds: 10), () {
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const SecondPage()));
@@ -30,14 +30,13 @@ class FirstPageState extends State<FirstPage> {
           const SizedBox(height: 50),
           Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Image.asset(
                   'assets/logo.png',
                   width: 150,
                   height: 150,
                 ),
-                const SizedBox(height: 20),
                 const Text(
                   "Simplifying Road Safety",
                   style: TextStyle(
@@ -63,19 +62,3 @@ class FirstPageState extends State<FirstPage> {
     );
   }
 }
-
-/*class SecondPage extends StatelessWidget {
-  const SecondPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Home Page"),
-      ),
-      body: const Center(
-        child: Text("This is the main screen after the splash screen."),
-      ),
-    );
-  }
-}*/

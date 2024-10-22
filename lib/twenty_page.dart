@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
-import 'twenty_first_page.dart';
-import 'twenty_third_page.dart';
-import 'twenty_five_page.dart';
-//import 'twenty_seven_page.dart';
-//import 'twenty_nine_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // For Firestore
+import 'package:sltrafficapp/twenty_first_page.dart';
+import 'package:sltrafficapp/twenty_third_page.dart';
+import 'package:sltrafficapp/twenty_five_page.dart'; // Import TwentyFivePage
+import 'package:sltrafficapp/twenty_seven_page.dart';
+//import 'package:sltrafficapp/twenty_nine_page.dart';
 
 class TwentyPage extends StatelessWidget {
   final Map<String, dynamic> userData;
   TwentyPage({required this.userData});
 
+  // Remove the TextEditingController here
+  //final TextEditingController _vehicleNoController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-
     String userName = userData['userName'] ?? '';
 
     return Scaffold(
@@ -91,6 +94,9 @@ class TwentyPage extends StatelessWidget {
                 // Revenue Number Button
                 ElevatedButton(
                   onPressed: () {
+                    // Pass vehicleNo when navigating to TwentyFivePage
+                    // Remove this section since we're not getting the vehicle number
+                    //String vehicleNumber = _vehicleNoController.text.trim();
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => TwentyFivePage()),
@@ -119,7 +125,7 @@ class TwentyPage extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => TwentySevenPage()),
+                      MaterialPageRoute(builder: (context) => TwentySevenPage(userData: userData)), // Pass userData
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -164,6 +170,19 @@ class TwentyPage extends StatelessWidget {
                     ),
                   ),
                 ),
+
+                // Remove this part - You're not getting the vehicle number here.
+                //SizedBox(height: 20),
+                //TextField(
+                //  controller: _vehicleNoController,
+                //  decoration: const InputDecoration(
+                //    labelText: 'Enter Vehicle Number',
+                //    labelStyle: TextStyle(color: Colors.white),
+                //    filled: true,
+                //    fillColor: Colors.white24,
+                //  ),
+                //),
+
               ],
             ),
           ),
@@ -185,6 +204,7 @@ class TwentyNinePage extends StatelessWidget {
   }
 }
 
+/*
 class TwentySevenPage extends StatelessWidget {
   const TwentySevenPage({super.key});
 
@@ -196,3 +216,63 @@ class TwentySevenPage extends StatelessWidget {
     );
   }
 }
+class TwentyFivePage extends StatelessWidget {
+  const TwentyFivePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Police Page")),
+      body: const Center(child: Text("Police Dashboard")),
+    );
+  }
+}
+
+class TwentyThreePage extends StatelessWidget {
+  const TwentyThreePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Police Page")),
+      body: const Center(child: Text("Police Dashboard")),
+    );
+  }
+}
+
+class TwentyOnePage extends StatefulWidget {
+  final Map<String, dynamic> userData;
+  final String userName;
+  TwentyOnePage({required this.userData, required this.userName});
+
+  @override
+  _TwentyOnePageState createState() => _TwentyOnePageState();
+}
+
+class _TwentyOnePageState extends State<TwentyOnePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Driving Licence'),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Driver Name: ${widget.userName}', style: TextStyle(fontSize: 18)),
+            SizedBox(height: 10),
+            // ... (Other details like NIC, DL Number, etc.)
+          ],
+        ),
+      ),
+    );
+  }
+}*/

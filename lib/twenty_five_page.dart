@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Firebase Firestore package
 import 'package:sltrafficapp/twenty_six_page.dart';
 
 class TwentyFivePage extends StatefulWidget {
@@ -8,14 +8,14 @@ class TwentyFivePage extends StatefulWidget {
 }
 
 class _TwentyFivePageState extends State<TwentyFivePage> {
-  final TextEditingController vehicleController = TextEditingController();
-  final TextEditingController chassisController = TextEditingController();
+  final TextEditingController _vehicleController = TextEditingController();
+  final TextEditingController _chassisController = TextEditingController();
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> _validateAndNavigate() async {
-    String vehicleNo = vehicleController.text.trim();
-    String chassisNo = chassisController.text.trim();
+    String vehicleNo = _vehicleController.text.trim();
+    String chassisNo = _chassisController.text.trim();
 
     if (vehicleNo.isEmpty || chassisNo.isEmpty) {
       _showErrorDialog('Please fill in both fields.');
@@ -31,7 +31,6 @@ class _TwentyFivePageState extends State<TwentyFivePage> {
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
-
         _navigateToNextPage(vehicleNo);
       } else {
         _showErrorDialog('No matching vehicle found.');
@@ -90,7 +89,7 @@ class _TwentyFivePageState extends State<TwentyFivePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             TextField(
-              controller: vehicleController,
+              controller: _vehicleController,
               decoration: const InputDecoration(
                 labelText: 'Vehicle Registration Number',
                 labelStyle: TextStyle(color: Colors.white),
@@ -100,7 +99,7 @@ class _TwentyFivePageState extends State<TwentyFivePage> {
             ),
             const SizedBox(height: 20),
             TextField(
-              controller: chassisController,
+              controller: _chassisController,
               decoration: const InputDecoration(
                 labelText: 'Chassis Number (Last Six Characters)',
                 labelStyle: TextStyle(color: Colors.white),
@@ -127,5 +126,3 @@ class _TwentyFivePageState extends State<TwentyFivePage> {
     );
   }
 }
-
-

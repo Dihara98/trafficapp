@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'nineteen_page.dart'; // For Firestore
 //import 'package:bcrypt/bcrypt.dart' as bcrypt; // Import the bcrypt package
+//This is a comment
 
 class SignupPage extends StatefulWidget {
   @override

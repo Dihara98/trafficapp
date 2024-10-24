@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sltrafficapp/twenty_fourth_page.dart';
-//This is a comment
+import 'package:sltrafficapp/twenty_six_page.dart';
 
 class TwentyThirdPage extends StatefulWidget {
   @override
@@ -10,7 +10,7 @@ class TwentyThirdPage extends StatefulWidget {
 
 class _TwentyThirdPageState extends State<TwentyThirdPage> {
   final _formKey = GlobalKey<FormState>();
-  String? name, nicNo, contactNo, vehicleNo;
+  String? name, nicNo, contactNo, vehicleNo, chassisNo;
   String? errorMessage;
 
   Future<void> _checkVehicleRegistration() async {
@@ -25,6 +25,32 @@ class _TwentyThirdPageState extends State<TwentyThirdPage> {
           context,
           MaterialPageRoute(
             builder: (context) => TwentyFourthPage(vehicleNo: vehicleNo!),
+          ),
+        );
+      } else {
+        setState(() {
+          errorMessage = 'Vehicle Registration Number not found!';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = 'Error checking registration: $e';
+      });
+    }
+  }
+
+  Future<void> _validateAndNavigate() async {
+    try {
+      var querySnapshot = await FirebaseFirestore.instance
+          .collection('RevenueLicence')
+          .where('vehicleNo', isEqualTo: vehicleNo)
+          .where('chassisNo', isEqualTo: chassisNo)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TwentySixPage(vehicleNo: vehicleNo!),
           ),
         );
       } else {
@@ -90,12 +116,19 @@ class _TwentyThirdPageState extends State<TwentyThirdPage> {
                 validator: (value) => value!.isEmpty ? 'Please enter the Vehicle Registration No' : null,
                 onSaved: (value) => vehicleNo = value,
               ),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Chassis No', labelStyle: TextStyle(color: Colors.white)),
+                style: TextStyle(color: Colors.white),
+                validator: (value) => value!.isEmpty ? 'Please enter last six characters of Chassis No' : null,
+                onSaved: (value) => chassisNo = value,
+              ),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     _checkVehicleRegistration();
+                    _validateAndNavigate();
                   }
                 },
                 style: ElevatedButton.styleFrom(

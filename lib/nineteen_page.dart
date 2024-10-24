@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // For Firestore
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sltrafficapp/twenty_page.dart';
-import 'package:sltrafficapp/signup_page.dart'; // Import the SignupPage
-//import 'package:bcrypt/bcrypt.dart' as bcrypt; // Import the bcrypt package
-import 'twenty_first_page.dart';
-//This is a comment
+import 'package:sltrafficapp/signup_page.dart';
+import 'forget_password_page.dart';
 
 class NineteenPage extends StatefulWidget {
   @override
@@ -15,56 +13,74 @@ class NineteenPage extends StatefulWidget {
 class _NineteenPageState extends State<NineteenPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  bool _loading = false;
-  String? _errorMessage;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> _login() async {
-    setState(() {
-      _loading = true;
-      _errorMessage = null;
-    });
-
-    String username = _usernameController.text;
-    String password = _passwordController.text;
-
+  Future<String?> _getEmailFromUsername(String username) async {
     try {
-      // Get the user data from Firestore
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+      final QuerySnapshot result = await _firestore
           .collection('Driver')
           .where('userName', isEqualTo: username)
           .limit(1)
           .get();
 
-      if (querySnapshot.docs.isEmpty) {
-        setState(() {
-          _errorMessage = 'User not found';
-          _loading = false;
-        });
-        return;
-      }
-
-      var userData = querySnapshot.docs[0].data() as Map<String, dynamic>;
-
-      // Compare the entered password with the hashed password in Firestore
-      //if (await bcrypt.checkpw(password.codeUnits, userData['password'] as String)) { // Use bcrypt.checkpw for comparison
-      if (password == userData['password']) {
-      // Passwords match - proceed with login
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => TwentyPage(userData: userData)),
-        );
+      if (result.docs.isNotEmpty) {
+        return result.docs.first['email'];
       } else {
-        setState(() {
-          _errorMessage = 'Incorrect password';
-          _loading = false;
-        });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('No user found for that username.'),
+        ));
+        return null;
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = 'Error: $e';
-        _loading = false;
-      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error fetching email for username: $e'),
+      ));
+      return null;
+    }
+  }
+
+  void _login() async {
+    if (_formKey.currentState!.validate()) {
+      String? email = await _getEmailFromUsername(_usernameController.text.trim());
+
+      if (email != null) {
+        try {
+          final UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+            email: email,
+            password: _passwordController.text.trim(),
+          );
+
+          // Fetch user data after successful login
+          DocumentSnapshot userData = await _firestore
+              .collection('Driver')
+              .doc(userCredential.user!.uid)
+              .get();
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TwentyPage(userData: userData['userName']),
+            ),
+          );
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'user-not-found') {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('No user found for that email.'),
+            ));
+          } else if (e.code == 'wrong-password') {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Wrong password provided.'),
+            ));
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Error: ${e.message}'),
+            ));
+          }
+        }
+      }
     }
   }
 
@@ -75,103 +91,114 @@ class _NineteenPageState extends State<NineteenPage> {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset('assets/logo.png', height: 80),
-              SizedBox(height: 20),
-              Text(
-                'Ready to streamline the road to safer driving.\nLet\'s manage fines efficiently.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.amber,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 30),
-
-              // Username field
-              TextField(
-                controller: _usernameController,
-                decoration: InputDecoration(
-                  hintText: 'User Name',
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                ),
-              ),
-              SizedBox(height: 20),
-
-              // Password field
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: 'Password',
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                  suffixIcon: Icon(Icons.visibility),
-                ),
-              ),
-              SizedBox(height: 10),
-
-
-              if (_errorMessage != null)
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('assets/logo.png', height: 80),
+                SizedBox(height: 20),
                 Text(
-                  _errorMessage!,
-                  style: TextStyle(color: Colors.red),
-                ),
-
-              SizedBox(height: 20),
-
-
-              ElevatedButton(
-                onPressed: _loading ? null : _login,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber,
-                  padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: _loading
-                    ? CircularProgressIndicator(color: Colors.black)
-                    : Text(
-                  'LOGIN',
-                  style: TextStyle(fontSize: 18, color: Colors.black),
-                ),
-              ),
-
-              SizedBox(height: 20),
-
-              // Sign Up link
-              GestureDetector(
-                onTap: () {
-                  // Navigate to the SignupPage
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignupPage()),
-                  );
-                },
-                child: Text(
-                  'Don\'t have an account? Sign up',
+                  'Ready to streamline the road to safer driving.\nLet\'s manage fines efficiently.',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.amber,
-                    decoration: TextDecoration.underline,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-            ],
+                SizedBox(height: 30),
+                TextFormField(
+                  controller: _usernameController,
+                  decoration: InputDecoration(
+                    hintText: 'User Name',
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your username';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    hintText: 'Password',
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                    suffixIcon: Icon(Icons.visibility),
+                  ),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your password';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _login,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                    padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    'LOGIN',
+                    style: TextStyle(fontSize: 18, color: Colors.black),
+                  ),
+                ),
+                SizedBox(height: 20),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ForgetPasswordPage()),
+                    );
+                  },
+                  child: Text(
+                    'Forgot Password?',
+                    style: TextStyle(
+                      color: Colors.amber,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignupPage()),
+                    );
+                  },
+                  child: Text(
+                    'Sign Up',
+                    style: TextStyle(
+                      color: Colors.amber,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
       ),

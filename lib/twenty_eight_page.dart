@@ -18,15 +18,15 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
   Future<void> fetchGotFineData(String userName) async {
     try {
       // Step 1: Fetch Driver details to get dlNo
-      QuerySnapshot driverSnapshot = await FirebaseFirestore.instance
+      QuerySnapshot driverLicenceSnapshot = await FirebaseFirestore.instance
           .collection('DrivingLicence')
           .where('userName', isEqualTo: userName)
           .get();
 
 
-      if (driverSnapshot.docs.isNotEmpty) {
+      if (driverLicenceSnapshot.docs.isNotEmpty) {
         // Assuming the first document contains the relevant data
-        String dlNo = driverSnapshot.docs.first['dlNo'];
+        String dlNo = driverLicenceSnapshot.docs.first['dlNo'];
         print('Fetched dlNo: $dlNo');
 
         // Step 2: Fetch Gotfine data using dlNo
@@ -36,6 +36,22 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
             .get();
 
         if (gotFineSnapshot.docs.isNotEmpty) {
+
+
+          Future<int> countDocumentsWithDlNo(String dlNo) async {
+            QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+                .collection('GotFine')
+                .where('dlNo', isEqualTo: dlNo)
+                .get();
+
+            return querySnapshot.docs.length;
+          }
+
+          int count = await countDocumentsWithDlNo('dlNo');
+          print('Number of documents with dlNo ABC123: $count');
+
+
+
           // Store all fines in fineDataList
           setState(() {
             pendingFinesCount = gotFineSnapshot.docs.length; // Count of pending fines

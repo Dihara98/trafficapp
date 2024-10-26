@@ -95,6 +95,7 @@ class _FifteenPageState extends State<FifteenPage> {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('Fines')
+          .orderBy('fineId')
           .get();
 
       setState(() {

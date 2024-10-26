@@ -93,59 +93,6 @@ class TwentyFourthPage extends StatelessWidget {
 
                 SizedBox(height: 80),
 
-                // Revenue Number Button
-                ElevatedButton(
-                  onPressed: () {
-                    // Pass vehicleNo when navigating to TwentyFivePage
-                    // Remove this section since we're not getting the vehicle number
-                    //String vehicleNumber = _vehicleNoController.text.trim();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => TwentySixPage(vehicleNo: vehicleNo)),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.amber,
-                    padding: EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Text(
-                    'Revenue Number',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20),
-                // Insurance Button
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => TwentySevenPage(vehicleNo: vehicleNo), // Pass userData
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.amber,
-                    padding: EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Text(
-                    'Insuarance',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
               ],
 
             ),

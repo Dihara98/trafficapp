@@ -27,6 +27,21 @@ class _SignupPageState extends State<SignupPage> {
   void _register() async {
     if (_formKey.currentState!.validate()) {
       try {
+
+        // Check if the driving license number already exists in Firestore
+        final QuerySnapshot dlNoSnapshot = await _firestore
+            .collection('Driver')
+            .where('dlNo', isEqualTo: _dlNoController.text.trim())
+            .get();
+
+        if (dlNoSnapshot.docs.isNotEmpty) {
+          // Show error if the driving license number is already registered
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('This driving license number is already registered.')),
+          );
+          return;
+        }
+
         final UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
@@ -48,7 +63,9 @@ class _SignupPageState extends State<SignupPage> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Registered successfully: ${userCredential.user!.email}'),
+          //content: Text('Registered successfully: ${userCredential.user!.email}'),
+          content: Text('Registered successfully with Driving License Number: ${_dlNoController.text.trim()}'),
+
         ));
 
         // Navigate to login page

@@ -11,8 +11,8 @@ class TwentyEightPage extends StatefulWidget {
 }
 
 class _TwentyEightPageState extends State<TwentyEightPage> {
-  int pendingFinesCount = 0;
-  String pendingFineAmount = 'Rs. 0.00';
+  //int pendingFinesCount = 0;
+  //String pendingFineAmount = 'Rs. 0.00';
   List<Map<String, dynamic>> fineDataList = []; // List to store fine data
 
   Future<void> fetchGotFineData(String userName) async {
@@ -54,17 +54,17 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
 
           // Store all fines in fineDataList
           setState(() {
-            pendingFinesCount = gotFineSnapshot.docs.length; // Count of pending fines
-            pendingFineAmount = 'Rs. ${(gotFineSnapshot.docs.fold(0.0, (sum, doc) {
-              var fineAmount = doc['fineAmount'];
-              if (fineAmount is num) {
+           // pendingFinesCount = gotFineSnapshot.docs.length; // Count of pending fines
+            //pendingFineAmount = 'Rs. ${(gotFineSnapshot.docs.fold(0.0, (sum, doc) {
+              //var fineAmount = doc['fineAmount'];
+              /*&if (fineAmount is num) {
                 return sum + fineAmount; // If it's a number, add it to the sum
               } else if (fineAmount is String) {
                 // Try parsing the string to a double, default to 0.0 if parsing fails
                 return sum + (double.tryParse(fineAmount) ?? 0.0);
               }
               return sum; // If neither num nor valid string, ignore the value
-            })).toStringAsFixed(2)}';
+            })).toStringAsFixed(2)}'   */
 
             // Collect fine data for display
             fineDataList = gotFineSnapshot.docs
@@ -120,7 +120,7 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
                 SizedBox(height: 20),
 
                 // Display Pending Fines
-                Text(
+             /*   Text(
                   'Pending Fines: $pendingFinesCount',
                   style: TextStyle(
                     color: Colors.white,
@@ -132,7 +132,7 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
 
                 // Display Pending Fine Amount
                 Text(
-                  'Pending Fine Amount: $pendingFineAmount',
+                 'Pending Fine Amount: $pendingFineAmount',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -140,7 +140,7 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
                   ),
                 ),
                 SizedBox(height: 20),
-
+*/
                 // Display Pending Fines Details
                 Expanded(
                   child: ListView.builder(

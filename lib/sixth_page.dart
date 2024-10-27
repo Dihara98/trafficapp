@@ -44,7 +44,7 @@ class SixthPage extends StatelessWidget {
             TextField(
               controller: _dlNoController,
               decoration: InputDecoration(
-                hintText: 'Enter your driving license number',
+                hintText: 'Enter driving license number',
                 hintStyle: TextStyle(color: Colors.white70),
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.white),

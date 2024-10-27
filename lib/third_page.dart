@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Firebase Firestore package
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sltrafficapp/fourth_page.dart';
 //This is a comment
@@ -20,16 +20,16 @@ class _ThirdPageState extends State<ThirdPage> {
   Future<void> _login() async {
     setState(() {
       _loading = true;
-      _errorMessage = null; // Clear any previous error messages
+      _errorMessage = null;
     });
 
     String username = _usernameController.text;
     String password = _passwordController.text;
 
     try {
-      // Query Firestore to get user data
+
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('TrafficPoliceOfficer') // Your Firestore collection
+          .collection('TrafficPoliceOfficer')
           .where('userName', isEqualTo: username)
           .limit(1)
           .get();
@@ -44,9 +44,8 @@ class _ThirdPageState extends State<ThirdPage> {
 
       var userData = querySnapshot.docs[0].data() as Map<String, dynamic>;
 
-      // Check if the password matches
+
       if (userData['password'] == password) {
-        // Password matches, navigate to another page
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => FourthPage(userData: userData)),
@@ -75,7 +74,6 @@ class _ThirdPageState extends State<ThirdPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Logo and introductory text
               Image.asset('assets/logo.png', height: 80),
               SizedBox(height: 20),
               Text(
@@ -89,7 +87,7 @@ class _ThirdPageState extends State<ThirdPage> {
               ),
               SizedBox(height: 30),
 
-              // Username field
+
               TextField(
                 controller: _usernameController,
                 decoration: InputDecoration(
@@ -105,7 +103,7 @@ class _ThirdPageState extends State<ThirdPage> {
               ),
               SizedBox(height: 20),
 
-              // Password field
+
               TextField(
                 controller: _passwordController,
                 obscureText: true,
@@ -132,9 +130,9 @@ class _ThirdPageState extends State<ThirdPage> {
 
               SizedBox(height: 20),
 
-              // Login button
+
               ElevatedButton(
-                onPressed: _loading ? null : _login, // Disable button when loading
+                onPressed: _loading ? null : _login,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.amber,
                   padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
@@ -143,7 +141,7 @@ class _ThirdPageState extends State<ThirdPage> {
                   ),
                 ),
                 child: _loading
-                    ? CircularProgressIndicator(color: Colors.black) // Show loading spinner
+                    ? CircularProgressIndicator(color: Colors.black)
                     : Text(
                   'LOGIN',
                   style: TextStyle(fontSize: 18, color: Colors.black),
@@ -152,14 +150,10 @@ class _ThirdPageState extends State<ThirdPage> {
 
               SizedBox(height: 20),
 
-              // Sign Up link
+
               GestureDetector(
                 onTap: () {
-                  // Navigate to the SignupPage
-                  //Navigator.push(
-                    //context,
-                    //MaterialPageRoute(builder: (context) => SignupPolicePage()),
-                  //);
+
                 },
                 child: Text(
                   'Don\'t have an account? Sign up',

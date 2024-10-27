@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-     home:FirstPage(), //start app with first page
+      home:FirstPage(), //start app with first page
 
     );
   }

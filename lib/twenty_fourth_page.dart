@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sltrafficapp/twenty_seven_page.dart';
+//import 'package:sltrafficapp/twenty_five_page.dart';
+import 'package:sltrafficapp/twenty_six_page.dart';
+import 'package:sltrafficapp/twenty_third_page.dart';
 //This is a comment
 
 class TwentyFourthPage extends StatelessWidget {
@@ -86,7 +90,11 @@ class TwentyFourthPage extends StatelessWidget {
                 _buildDetailField('Make', vehicleDetails['make']),
                 _buildDetailField('Model', vehicleDetails['model']),
                 _buildDetailField('Year of Manufacture', vehicleDetails['yearOfManufacture']),
+
+                SizedBox(height: 80),
+
               ],
+
             ),
           );
         },

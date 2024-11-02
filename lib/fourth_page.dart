@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'fifth_page.dart';
-//This is a comment
 
-// This page will receive the user data fetched from Firestore
 class FourthPage extends StatelessWidget {
   final Map<String, dynamic> userData;
 
@@ -13,32 +11,58 @@ class FourthPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFF1b4a56),
-      body: SafeArea(  // Added SafeArea to ensure content is not obscured
-        child: Center(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset('assets/logo.png', height: 30),
+          ),
+        ],
+        backgroundColor: Color(0xFF1b4a56),
+      ),
+      body: SafeArea(
+        child:
+        Column( // Use a Column to add spacing after AppBar
+            children: [
+            SizedBox(height: 100), // Add spacing after AppBar
+        Center(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                // Back button in the top left corner
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: IconButton(
-                    icon: Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
+                SizedBox(height: 20),
+                //SizedBox(height: 20),
+
+                // Add Padding around CircleAvatar to reduce space
+                //Padding(
+                  //padding: const EdgeInsets.only(top: 10.0), // Adjust top padding
+                  //child: CircleAvatar(
+                    //radius: 80,
+                    //backgroundColor: Colors.amber,
+                    //child: Icon(Icons.person, size: 100, color: Colors.white),
+                  //),
+                //),
+                CircleAvatar(
+                  radius: 80,
+                  backgroundColor: Colors.amber,
+                  child: Icon(Icons.person, size: 100, color: Colors.white),
                 ),
                 SizedBox(height: 20),
 
                 // Displaying the user's logo or profile placeholder
-                CircleAvatar(
+                /*CircleAvatar(
                   radius: 80,  // Adjust the size of the circle avatar
                   backgroundColor: Colors.amber,  // Change the color as needed
                   child: Icon(Icons.person, size: 100, color: Colors.white),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 20),*/
 
                 // Displaying the fetched user data: name, rank, and location
                 Text(
@@ -79,16 +103,16 @@ class FourthPage extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.amber,
-                    padding: EdgeInsets.symmetric(horizontal: 80, vertical: 15),
+                    padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(25),
                     ),
                   ),
                   child: Text(
                     'FINES',
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: 18,
+                      fontSize: 23,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -97,6 +121,8 @@ class FourthPage extends StatelessWidget {
             ),
           ),
         ),
+        ],
+      ),
       ),
     );
   }

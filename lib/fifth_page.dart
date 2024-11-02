@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'sixth_page.dart';
-//This is a comment
 
 class FifthPage extends StatelessWidget {
   @override
@@ -14,12 +13,13 @@ class FifthPage extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset('assets/logo.png', height: 30),
+          ),
+        ],
         backgroundColor: Color(0xFF1b4a56),
-        title: Image.asset(
-          'assets/logo.png',
-          height: 30,
-        ),
-        centerTitle: true,
       ),
       body: Center(
         child: Column(
@@ -37,16 +37,16 @@ class FifthPage extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.amber,
-                padding: EdgeInsets.symmetric(horizontal: 80, vertical: 15),
+                padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(25),
                 ),
               ),
               child: Text(
                 'Driving Licence',
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 18,
+                  fontSize: 23,
                   fontWeight: FontWeight.bold,
                 ),
               ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'second_page.dart';
-//This is a comment
 
 class FirstPage extends StatefulWidget {
   const FirstPage({super.key});

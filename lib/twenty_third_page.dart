@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Firebase Firestore package
 import 'package:sltrafficapp/twenty_fourth_page.dart';
 import 'package:sltrafficapp/twenty_six_page.dart';
 
@@ -39,31 +39,6 @@ class _TwentyThirdPageState extends State<TwentyThirdPage> {
     }
   }
 
-  Future<void> _validateAndNavigate() async {
-    try {
-      var querySnapshot = await FirebaseFirestore.instance
-          .collection('RevenueLicence')
-          .where('vehicleNo', isEqualTo: vehicleNo)
-          .where('chassisNo', isEqualTo: chassisNo)
-          .get();
-      if (querySnapshot.docs.isNotEmpty) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => TwentySixPage(vehicleNo: vehicleNo!),
-          ),
-        );
-      } else {
-        setState(() {
-          errorMessage = 'Vehicle Registration Number not found!';
-        });
-      }
-    } catch (e) {
-      setState(() {
-        errorMessage = 'Error checking registration: $e';
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,19 +91,13 @@ class _TwentyThirdPageState extends State<TwentyThirdPage> {
                 validator: (value) => value!.isEmpty ? 'Please enter the Vehicle Registration No' : null,
                 onSaved: (value) => vehicleNo = value,
               ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Chassis No', labelStyle: TextStyle(color: Colors.white)),
-                style: TextStyle(color: Colors.white),
-                validator: (value) => value!.isEmpty ? 'Please enter last six characters of Chassis No' : null,
-                onSaved: (value) => chassisNo = value,
-              ),
+
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     _checkVehicleRegistration();
-                    _validateAndNavigate();
                   }
                 },
                 style: ElevatedButton.styleFrom(

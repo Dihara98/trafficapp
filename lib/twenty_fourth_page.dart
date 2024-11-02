@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sltrafficapp/twenty_seven_page.dart';
-//import 'package:sltrafficapp/twenty_five_page.dart';
 import 'package:sltrafficapp/twenty_six_page.dart';
 import 'package:sltrafficapp/twenty_third_page.dart';
-//This is a comment
 
 class TwentyFourthPage extends StatelessWidget {
   final String vehicleNo;

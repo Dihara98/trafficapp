@@ -1,48 +1,99 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // For Firestore
-//import 'package:sltrafficapp/twenty_nine_page.dart'; // Import the TwentyNinePage
-//This is a comment
 
 class TwentyEightPage extends StatefulWidget {
-  final Map<String, dynamic> userData; // Pass the user data
-  TwentyEightPage({required this.userData});
+  final String userName; // Pass the user data
+  TwentyEightPage({required this.userName});
+
 
   @override
   _TwentyEightPageState createState() => _TwentyEightPageState();
 }
 
 class _TwentyEightPageState extends State<TwentyEightPage> {
-  int pendingFinesCount = 0;
-  String pendingFineAmount = 'Rs. 0.00';
+  //int pendingFinesCount = 0;
+  //String pendingFineAmount = 'Rs. 0.00';
+  List<Map<String, dynamic>> fineDataList = []; // List to store fine data
+
+  Future<void> fetchGotFineData(String userName) async {
+    try {
+      // Step 1: Fetch Driver details to get dlNo
+      QuerySnapshot driverLicenceSnapshot = await FirebaseFirestore.instance
+          .collection('DrivingLicence')
+          .where('userName', isEqualTo: userName)
+          .get();
+
+
+      if (driverLicenceSnapshot.docs.isNotEmpty) {
+        // Assuming the first document contains the relevant data
+        String dlNo = driverLicenceSnapshot.docs.first['dlNo'];
+        print('Fetched dlNo: $dlNo');
+
+        // Step 2: Fetch Gotfine data using dlNo
+        QuerySnapshot gotFineSnapshot = await FirebaseFirestore.instance
+            .collection('GotFine')
+            .where('dlNo', isEqualTo: dlNo)
+            .get();
+
+        if (gotFineSnapshot.docs.isNotEmpty) {
+
+
+          Future<int> countDocumentsWithDlNo(String dlNo) async {
+            QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+                .collection('GotFine')
+                .where('dlNo', isEqualTo: dlNo)
+                .get();
+
+            return querySnapshot.docs.length;
+          }
+
+          int count = await countDocumentsWithDlNo('dlNo');
+          print('Number of documents with dlNo ABC123: $count');
+
+
+
+          // Store all fines in fineDataList
+          setState(() {
+            // pendingFinesCount = gotFineSnapshot.docs.length; // Count of pending fines
+            //pendingFineAmount = 'Rs. ${(gotFineSnapshot.docs.fold(0.0, (sum, doc) {
+            //var fineAmount = doc['fineAmount'];
+            /*&if (fineAmount is num) {
+                return sum + fineAmount; // If it's a number, add it to the sum
+              } else if (fineAmount is String) {
+                // Try parsing the string to a double, default to 0.0 if parsing fails
+                return sum + (double.tryParse(fineAmount) ?? 0.0);
+              }
+              return sum; // If neither num nor valid string, ignore the value
+            })).toStringAsFixed(2)}'   */
+
+            // Collect fine data for display
+            fineDataList = gotFineSnapshot.docs
+                .map((doc) => {
+              'fullName': doc['fullName'] ?? 'N/A',
+              'vehicleNo': doc['vehicleNo'] ?? 'N/A',
+              'dateOfOffence': doc['dateOfOffence'] ?? 'N/A',
+              'timeOfOffence': doc['timeOfOffence'] ?? 'N/A',
+              'placeOffence': doc['placeOffence'] ?? 'N/A',
+              'selectedFine': doc['selectedFine'] ?? 'N/A',
+              'courtDate': doc['courtDate'] ?? 'N/A',
+            })
+                .toList();
+          });
+        } else {
+          print('No fines found for this dlNo.');
+        }
+      } else {
+        print('Driver not found for this userName.');
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    _fetchFineData();
-  }
-
-  Future<void> _fetchFineData() async {
-    try {
-      // Fetch fine data from Firestore
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('GotFine')
-          .where('dlNo', isEqualTo: widget.userData['dlNo']) // Query by the logged-in user's dlNo
-          .get();
-
-      int fineCount = querySnapshot.docs.length;
-      double totalFineAmount = 0;
-
-      for (var doc in querySnapshot.docs) {
-        totalFineAmount += doc['fineAmount'].toDouble(); // Assuming a 'fineAmount' field exists
-      }
-
-      setState(() {
-        pendingFinesCount = fineCount;
-        pendingFineAmount = 'Rs. ${totalFineAmount.toStringAsFixed(2)}';
-      });
-    } catch (e) {
-      print('Error fetching fine data: $e');
-    }
+    fetchGotFineData(widget.userName); // Call the fetch method on initialization
   }
 
   @override
@@ -54,7 +105,7 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 // Back button in the top left corner
                 Align(
@@ -66,11 +117,10 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
                     },
                   ),
                 ),
-
                 SizedBox(height: 20),
 
                 // Display Pending Fines
-                Text(
+                /*   Text(
                   'Pending Fines: $pendingFinesCount',
                   style: TextStyle(
                     color: Colors.white,
@@ -82,22 +132,45 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
 
                 // Display Pending Fine Amount
                 Text(
-                  'Pending Fine Amount: $pendingFineAmount',
+                 'Pending Fine Amount: $pendingFineAmount',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 40),
+                SizedBox(height: 20),
+*/
+                // Display Pending Fines Details
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: fineDataList.length,
+                    itemBuilder: (context, index) {
+                      final fine = fineDataList[index];
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Full Name: ${fine['fullName']}', style: TextStyle(color: Colors.white)),
+                          Text('Vehicle No: ${fine['vehicleNo']}', style: TextStyle(color: Colors.white)),
+                          Text('Date of Offence: ${fine['dateOfOffence']}', style: TextStyle(color: Colors.white)),
+                          Text('Time of Offence: ${fine['timeOfOffence']}', style: TextStyle(color: Colors.white)),
+                          Text('Place of Offence: ${fine['placeOffence']}', style: TextStyle(color: Colors.white)),
+                          Text('Selected Fine: ${fine['selectedFine']}', style: TextStyle(color: Colors.white)),
+                          Text('Court Date: ${fine['courtDate']}', style: TextStyle(color: Colors.white)),
+                          SizedBox(height: 10), // Add some space between fines
+                        ],
+                      );
+                    },
+                  ),
+                ),
+
+                SizedBox(height: 20),
 
                 // History Button
-                ElevatedButton(
+                /*ElevatedButton(
                   onPressed: () {
-                    //Navigator.push(
-                      //context,
-                      //MaterialPageRoute(builder: (context) => TwentyNinePage(userData: widget.userData)),
-                    //);
+                    // Navigate to the history page
+                    // Navigator.push(context, MaterialPageRoute(builder: (context) => TwentyNinePage(userData: widget.userData)));
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.amber,
@@ -114,7 +187,7 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
+                ),*/
               ],
             ),
           ),
@@ -123,5 +196,3 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
     );
   }
 }
-
-// ... (Your other pages) ...

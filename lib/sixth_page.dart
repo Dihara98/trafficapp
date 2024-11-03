@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'sevength_and_eighth_page.dart';
-//This is a comment
 
 class SixthPage extends StatelessWidget {
   final TextEditingController _dlNoController = TextEditingController();
@@ -10,8 +9,6 @@ class SixthPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Color(0xFF074D5E), // Background color matching your design
       appBar: AppBar(
-        backgroundColor: Color(0xFF074D5E),
-        elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
@@ -21,9 +18,10 @@ class SixthPage extends StatelessWidget {
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Image.asset('assets/logo.png', width: 40), // Replace with your logo
+            child: Image.asset('assets/logo.png', height: 30),
           ),
         ],
+        backgroundColor: Color(0xFF1b4a56),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -44,7 +42,7 @@ class SixthPage extends StatelessWidget {
             TextField(
               controller: _dlNoController,
               decoration: InputDecoration(
-                hintText: 'Enter your driving license number',
+                hintText: 'Enter driving license number',
                 hintStyle: TextStyle(color: Colors.white70),
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.white),
@@ -67,16 +65,17 @@ class SixthPage extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.black, backgroundColor: Colors.yellow, // Text color
+                backgroundColor: Colors.amber,
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(25),
                 ),
-                padding: EdgeInsets.symmetric(vertical: 16),
               ),
               child: Text(
                 'SUBMIT',
                 style: TextStyle(
-                  fontSize: 18,
+                  color: Colors.black,
+                  fontSize: 23,
                   fontWeight: FontWeight.bold,
                 ),
               ),

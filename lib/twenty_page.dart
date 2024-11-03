@@ -1,23 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // For Firestore
+import 'package:sltrafficapp/twenty_eight_page.dart';
 import 'package:sltrafficapp/twenty_first_page.dart';
+import 'package:sltrafficapp/twenty_five_page.dart';
 import 'package:sltrafficapp/twenty_third_page.dart';
-import 'package:sltrafficapp/twenty_five_page.dart'; // Import TwentyFivePage
-import 'package:sltrafficapp/twenty_seven_page.dart';
-//import 'package:sltrafficapp/twenty_nine_page.dart';
-//This is a comment
+import 'package:sltrafficapp/twenty_nine_page.dart';
+import 'between_twenty_twenty_seven_page.dart';
 
 class TwentyPage extends StatelessWidget {
-  final Map<String, dynamic> userData;
-  TwentyPage({required this.userData});
+  final String userData;
 
-  // Remove the TextEditingController here
-  //final TextEditingController _vehicleNoController = TextEditingController();
+  const TwentyPage({Key? key, required this.userData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    String userName = userData['userName'] ?? '';
-
+    String userName = userData;
     return Scaffold(
       backgroundColor: Color(0xFF074D5E),
       body: SafeArea(
@@ -27,7 +23,6 @@ class TwentyPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Back button in the top left corner
                 Align(
                   alignment: Alignment.topLeft,
                   child: IconButton(
@@ -40,7 +35,6 @@ class TwentyPage extends StatelessWidget {
 
                 SizedBox(height: 20),
 
-                // Driving Licence Button
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
@@ -90,6 +84,7 @@ class TwentyPage extends StatelessWidget {
                     ),
                   ),
                 ),
+
                 SizedBox(height: 20),
 
                 // Revenue Number Button
@@ -120,13 +115,13 @@ class TwentyPage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 20),
-
                 // Insurance Button
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => TwentySevenPage(userData: userData)), // Pass userData
+                      MaterialPageRoute(builder: (context) => BetweenTwentyTwentySevenPage(),
+                      ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -146,13 +141,12 @@ class TwentyPage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 20),
-
                 // Fine History Button
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => TwentyNinePage()),
+                      MaterialPageRoute(builder: (context) => TwentyEightPage(userName: userName)),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -171,19 +165,6 @@ class TwentyPage extends StatelessWidget {
                     ),
                   ),
                 ),
-
-                // Remove this part - You're not getting the vehicle number here.
-                //SizedBox(height: 20),
-                //TextField(
-                //  controller: _vehicleNoController,
-                //  decoration: const InputDecoration(
-                //    labelText: 'Enter Vehicle Number',
-                //    labelStyle: TextStyle(color: Colors.white),
-                //    filled: true,
-                //    fillColor: Colors.white24,
-                //  ),
-                //),
-
               ],
             ),
           ),
@@ -192,88 +173,3 @@ class TwentyPage extends StatelessWidget {
     );
   }
 }
-
-class TwentyNinePage extends StatelessWidget {
-  const TwentyNinePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Police Page")),
-      body: const Center(child: Text("Police Dashboard")),
-    );
-  }
-}
-
-/*
-class TwentySevenPage extends StatelessWidget {
-  const TwentySevenPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Police Page")),
-      body: const Center(child: Text("Police Dashboard")),
-    );
-  }
-}
-class TwentyFivePage extends StatelessWidget {
-  const TwentyFivePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Police Page")),
-      body: const Center(child: Text("Police Dashboard")),
-    );
-  }
-}
-
-class TwentyThreePage extends StatelessWidget {
-  const TwentyThreePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Police Page")),
-      body: const Center(child: Text("Police Dashboard")),
-    );
-  }
-}
-
-class TwentyOnePage extends StatefulWidget {
-  final Map<String, dynamic> userData;
-  final String userName;
-  TwentyOnePage({required this.userData, required this.userName});
-
-  @override
-  _TwentyOnePageState createState() => _TwentyOnePageState();
-}
-
-class _TwentyOnePageState extends State<TwentyOnePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Driving Licence'),
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Driver Name: ${widget.userName}', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 10),
-            // ... (Other details like NIC, DL Number, etc.)
-          ],
-        ),
-      ),
-    );
-  }
-}*/

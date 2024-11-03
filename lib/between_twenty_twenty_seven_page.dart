@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Firebase Firestore package
-import 'package:sltrafficapp/twenty_six_page.dart';
+import 'package:sltrafficapp/twenty_seven_page.dart';
 //This is a comment
 
-class TwentyFivePage extends StatefulWidget {
+class BetweenTwentyTwentySevenPage extends StatefulWidget {
   @override
-  _TwentyFivePageState createState() => _TwentyFivePageState();
+  _BetweenTwentyTwentySevenPageState createState() => _BetweenTwentyTwentySevenPageState();
 }
 
-class _TwentyFivePageState extends State<TwentyFivePage> {
+class _BetweenTwentyTwentySevenPageState extends State<BetweenTwentyTwentySevenPage> {
   final TextEditingController _vehicleController = TextEditingController();
-  final TextEditingController _chassisController = TextEditingController();
+  final TextEditingController _policyNoController = TextEditingController();
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> _validateAndNavigate() async {
     String vehicleNo = _vehicleController.text.trim();
-    String chassisNo = _chassisController.text.trim();
+    String policyNo = _policyNoController.text.trim();
 
-    if (vehicleNo.isEmpty || chassisNo.isEmpty) {
+    if (vehicleNo.isEmpty || policyNo.isEmpty) {
       _showErrorDialog('Please fill in both fields.');
       return;
     }
@@ -26,9 +26,9 @@ class _TwentyFivePageState extends State<TwentyFivePage> {
     // Query Firestore for matching document
     try {
       var querySnapshot = await _firestore
-          .collection('RevenueLicence')
+          .collection('Insuarance')
           .where('vehicleNo', isEqualTo: vehicleNo)
-          .where('chassisNo', isEqualTo: chassisNo)
+          .where('policyNo', isEqualTo: policyNo)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
@@ -45,7 +45,7 @@ class _TwentyFivePageState extends State<TwentyFivePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => TwentySixPage(vehicleNo: vehicleNo),
+        builder: (context) => TwentySevenPage(vehicleNo: vehicleNo),
       ),
     );
   }
@@ -94,15 +94,15 @@ class _TwentyFivePageState extends State<TwentyFivePage> {
               decoration: const InputDecoration(
                 labelText: 'Vehicle Registration Number',
                 labelStyle: TextStyle(color: Colors.white),
-                filled: true,//check
+                filled: true,
                 fillColor: Colors.white24,
               ),
             ),
             const SizedBox(height: 20),
             TextField(
-              controller: _chassisController,
+              controller: _policyNoController,
               decoration: const InputDecoration(
-                labelText: 'Chassis Number (Last Six Characters)',
+                labelText: 'Policy Number',
                 labelStyle: TextStyle(color: Colors.white),
                 filled: true,
                 fillColor: Colors.white24,

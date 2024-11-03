@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // For Firestore
-import 'package:intl/intl.dart'; // For formatting timestamps
-//This is a comment
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
+
 
 class TwentySevenPage extends StatefulWidget {
-  final Map<String, dynamic> userData; // Receive the user data
+  final String vehicleNo;
 
-  TwentySevenPage({required this.userData});
+  TwentySevenPage({required this.vehicleNo});
 
   @override
   _TwentySevenPageState createState() => _TwentySevenPageState();
@@ -19,15 +19,15 @@ class _TwentySevenPageState extends State<TwentySevenPage> {
   @override
   void initState() {
     super.initState();
-    _fetchInsuranceDetails(); // Fetch details when the page loads
+    _fetchInsuranceDetails();
   }
 
   Future<void> _fetchInsuranceDetails() async {
     try {
-      // Query Firestore to find a document with the matching vehicleNo field
+
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('Insuarance') // Replace with your collection name in Firestore
-          .where('vehicleNo', isEqualTo: widget.userData['vehicleNo']) // Query using the vehicleNo field
+          .collection('Insuarance')
+          .where('vehicleNo')
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {

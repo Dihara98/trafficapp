@@ -1,3 +1,5 @@
+import 'package:bcrypt/bcrypt.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'nineteen_page.dart'; // For Firestore
@@ -10,113 +12,73 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
-  final _formKey = GlobalKey<FormState>(); // Key for form validation
-  final _nicController = TextEditingController();
-  final _dlNoController = TextEditingController();
-  final _fullNameController = TextEditingController();
-  final _addressController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final TextEditingController _nicController = TextEditingController();
+  final TextEditingController _dlNoController = TextEditingController();
+  final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
-  bool _loading = false;
-  String? _errorMessage;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> _signUp() async {
-    setState(() {
-      _loading = true;
-      _errorMessage = null; // Clear any previous error messages
-    });
+  void _register() async {
+    if (_formKey.currentState!.validate()) {
+      try {
 
-    String nic = _nicController.text.trim();
-    String dlNo = _dlNoController.text.trim();
-    String fullName = _fullNameController.text.trim();
-    String address = _addressController.text.trim();
-    String email = _emailController.text.trim();
-    String username = _usernameController.text.trim();
-    String password = _passwordController.text.trim();
+        // Check if the driving license number already exists in Firestore
+        final QuerySnapshot dlNoSnapshot = await _firestore
+            .collection('Driver')
+            .where('dlNo', isEqualTo: _dlNoController.text.trim())
+            .get();
 
-    try {
-      // Hash the password using bcrypt
-      //String hashedPassword = await bcrypt.hashpw(password.codeUnits, bcrypt.gensalt());
+        if (dlNoSnapshot.docs.isNotEmpty) {
+          // Show error if the driving license number is already registered
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('This driving license number is already registered.')),
+          );
+          return;
+        }
 
-      // Add new user data to Firestore with the hashed password
-      await FirebaseFirestore.instance
-          .collection('Driver') // Your Firestore collection
-          .add({
-        'NIC': nic,
-        'dlNo': dlNo,
-        'fullName': fullName,
-        'address': address,
-        'email': email,
-        'userName': username,
-        'password': password, // Store the hashed password
-      });
-
-      // After successful signup, you might want to:
-      // 1. Navigate back to the login page
-      // 2. Display a success message
-
-      setState(() {
-        _loading = false;
-        _errorMessage = null; // Clear any previous error messages
-        // ... (Optional) Display success message
-      });
-    } catch (e) {
-      setState(() {
-        _loading = false;
-        _errorMessage = 'Error signing up: $e';
-      });
-    }
-  }
-
-  void _showConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Successfully Signed Up!'),
-          content: Text('Do you want to log in?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => NineteenPage()),
-                ); // Navigate to the login page
-              },
-              child: Text('Yes'),
-            ),
-            TextButton(
-              onPressed: () {
-                // Exit the app
-                Navigator.of(context).popUntil((route) => route.isFirst); // Close the dialog and exit the app
-              },
-              child: Text('Yes'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                // ... (Your logic to exit the app)
-              },
-              child: Text('Exit App'),
-            ),
-          ],
+        final UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
         );
-      },
-    );
-  }
 
-  @override
-  void dispose() {
-    _nicController.dispose();
-    _dlNoController.dispose();
-    _fullNameController.dispose();
-    _addressController.dispose();
-    _emailController.dispose();
-    _usernameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+        final String hashedPassword = BCrypt.hashpw(_passwordController.text.trim(), BCrypt.gensalt());
+
+
+        // Save the username with email to Firestore
+        await _firestore.collection('Driver').doc(userCredential.user!.uid).set({
+          'userName': _usernameController.text.trim(),
+          'email': _emailController.text.trim(),
+          'address': _addressController.text.trim(),
+          'fullName': _fullNameController.text.trim(),
+          'dlNo': _dlNoController.text.trim(),
+          'nic': _nicController.text.trim(),
+          'password': hashedPassword,
+
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          //content: Text('Registered successfully: ${userCredential.user!.email}'),
+          content: Text('Registered successfully with Driving License Number: ${_dlNoController.text.trim()}'),
+
+        ));
+
+        // Navigate to login page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => NineteenPage()),
+        );
+      } on FirebaseAuthException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Error: ${e.message}'),
+        ));
+      }
+    }
   }
 
   @override
@@ -232,7 +194,6 @@ class _SignupPageState extends State<SignupPage> {
                       if (value == null || value.isEmpty) {
                         return 'Please enter an email address';
                       }
-                      // You can add more validation for email format here if needed
                       return null;
                     },
                   ),
@@ -268,38 +229,25 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter a password';
+                        return 'Please enter your password';
                       }
-                      // You can add more password validation here if needed
+                      if (value.length < 6) {
+                        return 'Password should be at least 6 characters';
+                      }
                       return null;
                     },
                   ),
                   SizedBox(height: 10),
 
-                  // Display error message if any
-                  if (_errorMessage != null)
-                    Text(
-                      _errorMessage!,
-                      style: TextStyle(color: Colors.red),
-                    ),
-
-                  SizedBox(height: 20),
-
-                  // Sign Up button
                   ElevatedButton(
-                    onPressed: _loading ? null : _signUp, // Disable button when loading
+                    onPressed: _register,
+                    child: Text('Sign Up'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.amber,
                       padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                    ),
-                    child: _loading
-                        ? CircularProgressIndicator(color: Colors.black) // Show loading spinner
-                        : Text(
-                      'SIGN UP',
-                      style: TextStyle(fontSize: 18, color: Colors.black),
                     ),
                   ),
                 ],

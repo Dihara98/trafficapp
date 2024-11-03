@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Firebase Firestore package
 import 'package:sltrafficapp/twenty_fourth_page.dart';
-//This is a comment
+import 'package:sltrafficapp/twenty_six_page.dart';
 
 class TwentyThirdPage extends StatefulWidget {
   @override
@@ -10,7 +10,7 @@ class TwentyThirdPage extends StatefulWidget {
 
 class _TwentyThirdPageState extends State<TwentyThirdPage> {
   final _formKey = GlobalKey<FormState>();
-  String? name, nicNo, contactNo, vehicleNo;
+  String? name, nicNo, contactNo, vehicleNo, chassisNo;
   String? errorMessage;
 
   Future<void> _checkVehicleRegistration() async {
@@ -38,6 +38,7 @@ class _TwentyThirdPageState extends State<TwentyThirdPage> {
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +91,7 @@ class _TwentyThirdPageState extends State<TwentyThirdPage> {
                 validator: (value) => value!.isEmpty ? 'Please enter the Vehicle Registration No' : null,
                 onSaved: (value) => vehicleNo = value,
               ),
+
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {

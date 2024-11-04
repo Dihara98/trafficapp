@@ -32,6 +32,8 @@ class _SixteenPageState extends State<SixteenAndSeventeenPage> {
   bool isLoading = true;
   late String vehicleNo;
   String? fineName;
+  Timestamp? validFromDate;
+  Timestamp? validToDate;
 
   @override
   void initState() {
@@ -40,6 +42,12 @@ class _SixteenPageState extends State<SixteenAndSeventeenPage> {
     _getCurrentDateTime();
     _fetchVehicleDetails();
     _fetchFineName();
+  }
+
+  String formatTimestamp(Timestamp? timestamp) {
+    if (timestamp == null) return 'N/A';
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp.seconds * 1000);
+    return DateFormat('dd MMMM yyyy').format(date); // Only show date
   }
 
   // Fetch Name and Address from Firebase using the dlNo
@@ -56,6 +64,9 @@ class _SixteenPageState extends State<SixteenAndSeventeenPage> {
         setState(() {
           fullName = driverDoc.docs.first['fullName'];
           address = driverDoc.docs.first['address'];
+          // ... inside _fetchDrivingLicence function ...
+          validFromDate = driverDoc.docs.first['dateOfIssue'] as Timestamp?;
+          validToDate = driverDoc.docs.first['dateOfExpiry'] as Timestamp?;
         });
       } else {
         print('Driver not found!');
@@ -256,6 +267,32 @@ class _SixteenPageState extends State<SixteenAndSeventeenPage> {
               ),
             ),
             Text(widget.contactNo, style: TextStyle(color: Colors.white)),
+
+            SizedBox(height: 16),
+            Text(
+              'Valid:',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            // Format and display valid from date
+            // ... inside build method ...
+            Text(
+              'From ${validFromDate != null ? formatTimestamp(validFromDate) : 'N/A'}',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+// ...
+            Text(
+              'To ${validToDate != null ? formatTimestamp(validToDate) : 'N/A'}',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+// ...
+
             SizedBox(height: 16),
             Text(
               'Court Date:',

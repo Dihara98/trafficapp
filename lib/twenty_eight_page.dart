@@ -54,10 +54,10 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
 
           // Store all fines in fineDataList
           setState(() {
-           // pendingFinesCount = gotFineSnapshot.docs.length; // Count of pending fines
+            // pendingFinesCount = gotFineSnapshot.docs.length; // Count of pending fines
             //pendingFineAmount = 'Rs. ${(gotFineSnapshot.docs.fold(0.0, (sum, doc) {
-              //var fineAmount = doc['fineAmount'];
-              /*&if (fineAmount is num) {
+            //var fineAmount = doc['fineAmount'];
+            /*&if (fineAmount is num) {
                 return sum + fineAmount; // If it's a number, add it to the sum
               } else if (fineAmount is String) {
                 // Try parsing the string to a double, default to 0.0 if parsing fails
@@ -120,7 +120,7 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
                 SizedBox(height: 20),
 
                 // Display Pending Fines
-             /*   Text(
+                /*   Text(
                   'Pending Fines: $pendingFinesCount',
                   style: TextStyle(
                     color: Colors.white,
@@ -167,7 +167,7 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
                 SizedBox(height: 20),
 
                 // History Button
-                ElevatedButton(
+                /*ElevatedButton(
                   onPressed: () {
                     // Navigate to the history page
                     // Navigator.push(context, MaterialPageRoute(builder: (context) => TwentyNinePage(userData: widget.userData)));
@@ -187,7 +187,7 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
+                ),*/
               ],
             ),
           ),

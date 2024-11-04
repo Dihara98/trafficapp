@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'third_page.dart';
 import 'nineteen_page.dart';
-//This is a comment
 
 class SecondPage extends StatelessWidget {
   const SecondPage({super.key});
@@ -30,23 +29,27 @@ class SecondPage extends StatelessWidget {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => ThirdPage()));
               },
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                //mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                Padding(padding: const EdgeInsets.only(left: 20.0),
-                  child: Image.asset(
-                    'assets/police_loginlogo.png',
-                    width: 50,  // Set width to match the size of the original icon
-                    height: 50, // Set height
+                  Padding(
+                    padding: const EdgeInsets.only(left: 75.0),
+                    child: Image.asset(
+                      'assets/police_loginlogo.png',
+                      width: 50,  // Set width to match the size of the original icon
+                      height: 50, // Set height
+                    ),
                   ),
-                ),
                   const SizedBox(width: 20),
-                  const Text(
+                  Text(
                     'Police',
-                    style: TextStyle(fontSize: 24),
+                    style: TextStyle(
+                      fontSize: 35,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                 ],
               ),
-
             ),
             const SizedBox(height: 20),
             // Driver Button
@@ -61,23 +64,27 @@ class SecondPage extends StatelessWidget {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => NineteenPage()));
               },
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                //mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                Padding(padding: const EdgeInsets.only(left: 20.0),
-                  child: Image.asset(
-                    'assets/driver_loginlogo.png',
-                    width: 50,
-                    height: 50,
+                  Padding(
+                    padding: const EdgeInsets.only(left: 75.0),
+                    child: Image.asset(
+                      'assets/driver_loginlogo.png',
+                      width: 50,
+                      height: 50,
+                    ),
                   ),
-                ),
                   const SizedBox(width: 20),
-                  const Text(
+                  Text(
                     'Driver',
-                    style: TextStyle(fontSize: 24),
+                    style: TextStyle(
+                      fontSize: 35,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                 ],
               ),
-
             ),
           ],
         ),
@@ -86,4 +93,3 @@ class SecondPage extends StatelessWidget {
     );
   }
 }
-

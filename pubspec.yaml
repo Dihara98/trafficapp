@@ -50,7 +50,8 @@ dependencies:
   firebase_storage: ^12.3.4
   #flutter_file_picker: ^6.0.0
   #downloads_path_provider_28: ^0.1.2
-  permission_handler: ^8.3.0
+ # permission_handler: ^8.3.0
+  image_picker: ^1.1.2
   #dio: ^4.0.4
 
 dev_dependencies:

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // For Firestore
+import 'package:firebase_storage/firebase_storage.dart'; // For Firebase Storage
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 
 class TwentyEightPage extends StatefulWidget {
@@ -66,7 +68,9 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
         build: (context) => pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
-            pw.Text("Fine Details", style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+            pw.Text("Fine Details",
+                style: pw.TextStyle(
+                    fontSize: 24, fontWeight: pw.FontWeight.bold)),
             pw.SizedBox(height: 20),
             pw.Text("Full Name: ${fineData['fullName']}"),
             pw.Text("Vehicle No: ${fineData['vehicleNo']}"),
@@ -81,22 +85,46 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
     );
 
     final output = await getTemporaryDirectory();
-    final file = File("${output.path}/fine_details_${fineData['vehicleNo']}.pdf");
+    final file = File(
+        "${output.path}/fine_details_${fineData['vehicleNo']}.pdf");
     await file.writeAsBytes(await pdf.save());
 
     // Open the PDF file after saving it
     await OpenFilex.open(file.path);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("PDF downloaded and opened successfully for ${fineData['vehicleNo']}!")),
+      SnackBar(
+          content: Text(
+              "PDF downloaded and opened successfully for ${fineData['vehicleNo']}!")),
     );
   }
 
-  Future<void> uploadPdf(Map<String, dynamic> fineData) async {
-    // Implement your PDF upload logic here
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Upload PDF feature is not implemented yet for ${fineData['vehicleNo']}.")),
+  Future<void> uploadPdfFromDevice() async {
+    // Pick a file from the device
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
     );
+
+    if (result != null && result.files.single.path != null) {
+      File file = File(result.files.single.path!);
+
+      // Define the storage path
+      String fileName = result.files.single.name;
+      final storageRef =
+      FirebaseStorage.instance.ref().child('pdfs/$fileName');
+
+      // Upload the PDF file to Firebase Storage
+      await storageRef.putFile(file);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("PDF uploaded successfully!")),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("No file selected.")),
+      );
+    }
   }
 
   @override
@@ -134,24 +162,34 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Full Name: ${fine['fullName']}', style: TextStyle(color: Colors.white)),
-                          Text('Vehicle No: ${fine['vehicleNo']}', style: TextStyle(color: Colors.white)),
-                          Text('Date of Offence: ${fine['dateOfOffence']}', style: TextStyle(color: Colors.white)),
-                          Text('Time of Offence: ${fine['timeOfOffence']}', style: TextStyle(color: Colors.white)),
-                          Text('Place of Offence: ${fine['placeOffence']}', style: TextStyle(color: Colors.white)),
-                          Text('Selected Fine: ${fine['selectedFine']}', style: TextStyle(color: Colors.white)),
-                          Text('Court Date: ${fine['courtDate']}', style: TextStyle(color: Colors.white)),
+                          Text('Full Name: ${fine['fullName']}',
+                              style: TextStyle(color: Colors.white)),
+                          Text('Vehicle No: ${fine['vehicleNo']}',
+                              style: TextStyle(color: Colors.white)),
+                          Text('Date of Offence: ${fine['dateOfOffence']}',
+                              style: TextStyle(color: Colors.white)),
+                          Text('Time of Offence: ${fine['timeOfOffence']}',
+                              style: TextStyle(color: Colors.white)),
+                          Text('Place of Offence: ${fine['placeOffence']}',
+                              style: TextStyle(color: Colors.white)),
+                          Text('Selected Fine: ${fine['selectedFine']}',
+                              style: TextStyle(color: Colors.white)),
+                          Text('Court Date: ${fine['courtDate']}',
+                              style: TextStyle(color: Colors.white)),
                           SizedBox(height: 10),
+                          // Row to hold buttons
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
+                              // Download PDF button
                               ElevatedButton(
                                 onPressed: () async {
                                   await generatePdf(fine);
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.amber,
-                                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 10),
                                 ),
                                 child: Text(
                                   'Download PDF',
@@ -162,13 +200,13 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
                                   ),
                                 ),
                               ),
+                              // Upload PDF button
                               ElevatedButton(
-                                onPressed: () async {
-                                  await uploadPdf(fine);
-                                },
+                                onPressed: uploadPdfFromDevice, // Call uploadPdfFromDevice for uploading PDFs
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.blue,
-                                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 10),
                                 ),
                                 child: Text(
                                   'Upload PDF',

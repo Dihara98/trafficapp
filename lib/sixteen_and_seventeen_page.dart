@@ -34,6 +34,8 @@ class _SixteenPageState extends State<SixteenAndSeventeenPage> {
   double? fineValue;
   Timestamp? validFromDate;
   Timestamp? validToDate;
+  bool cleared = false;
+  String pdfUrl = '';
 
   @override
   void initState() {
@@ -142,7 +144,9 @@ class _SixteenPageState extends State<SixteenAndSeventeenPage> {
         'selectedFine': widget.selectedFineId,
         'dateOfOffence': dateOfOffence,
         'timeOfOffence': timeOfOffence,
-        'courtDate': courtDate
+        'courtDate': courtDate,
+        'cleared':false,
+        'pdfUrl':'',
       });
       print('Data submitted successfully!');
       Navigator.pushReplacement(

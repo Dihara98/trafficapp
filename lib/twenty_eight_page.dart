@@ -21,6 +21,7 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
 
   Future<void> fetchGotFineData(String userName) async {
     try {
+      // Fetch dlNo from DrivingLicence based on userName
       QuerySnapshot driverLicenceSnapshot = await FirebaseFirestore.instance
           .collection('DrivingLicence')
           .where('userName', isEqualTo: userName)
@@ -30,24 +31,47 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
         String dlNo = driverLicenceSnapshot.docs.first['dlNo'];
         print('Fetched dlNo: $dlNo');
 
+        // Fetch fine data from GotFine collection based on dlNo
         QuerySnapshot gotFineSnapshot = await FirebaseFirestore.instance
             .collection('GotFine')
             .where('dlNo', isEqualTo: dlNo)
             .get();
 
         if (gotFineSnapshot.docs.isNotEmpty) {
-          setState(() {
-            fineDataList = gotFineSnapshot.docs
-                .map((doc) => {
+          List<Map<String, dynamic>> tempFineDataList = [];
+
+          for (var doc in gotFineSnapshot.docs) {
+            String selectedFine = doc['selectedFine'];
+            String fineName = 'N/A';
+            String fineValue = 'N/A';
+
+            // Fetch fineName and fineValue from Fines collection based on fineId
+            QuerySnapshot finesSnapshot = await FirebaseFirestore.instance
+                .collection('Fines')
+                .where('fineId', isEqualTo: selectedFine)
+                .get();
+
+            if (finesSnapshot.docs.isNotEmpty) {
+              fineName = finesSnapshot.docs.first['fineName'];
+              // Check if fineValue is an integer and convert to String
+              var fineValueData = finesSnapshot.docs.first['fineValue'];
+              fineValue = fineValueData is int ? fineValueData.toString() : fineValueData;
+            }
+
+            tempFineDataList.add({
               'fullName': doc['fullName'] ?? 'N/A',
               'vehicleNo': doc['vehicleNo'] ?? 'N/A',
               'dateOfOffence': doc['dateOfOffence'] ?? 'N/A',
               'timeOfOffence': doc['timeOfOffence'] ?? 'N/A',
               'placeOffence': doc['placeOffence'] ?? 'N/A',
-              'selectedFine': doc['selectedFine'] ?? 'N/A',
+              'selectedFine': fineName,
+              'fineValue': fineValue,
               'courtDate': doc['courtDate'] ?? 'N/A',
-            })
-                .toList();
+            });
+          }
+
+          setState(() {
+            fineDataList = tempFineDataList;
           });
         } else {
           print('No fines found for this dlNo.');
@@ -59,6 +83,7 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
       print('Error fetching data: $e');
     }
   }
+
 
   Future<void> generatePdf(Map<String, dynamic> fineData) async {
     final pdf = pw.Document();
@@ -78,6 +103,7 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
             pw.Text("Time of Offence: ${fineData['timeOfOffence']}"),
             pw.Text("Place of Offence: ${fineData['placeOffence']}"),
             pw.Text("Selected Fine: ${fineData['selectedFine']}"),
+            pw.Text("Fine Value: ${fineData['fineValue']}"),
             pw.Text("Court Date: ${fineData['courtDate']}"),
           ],
         ),
@@ -85,8 +111,7 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
     );
 
     final output = await getTemporaryDirectory();
-    final file = File(
-        "${output.path}/fine_details_${fineData['vehicleNo']}.pdf");
+    final file = File("${output.path}/fine_details_${fineData['vehicleNo']}.pdf");
     await file.writeAsBytes(await pdf.save());
 
     // Open the PDF file after saving it
@@ -174,14 +199,14 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
                               style: TextStyle(color: Colors.white)),
                           Text('Selected Fine: ${fine['selectedFine']}',
                               style: TextStyle(color: Colors.white)),
+                          Text('Fine Value: ${fine['fineValue']}',
+                              style: TextStyle(color: Colors.white)),
                           Text('Court Date: ${fine['courtDate']}',
                               style: TextStyle(color: Colors.white)),
                           SizedBox(height: 10),
-                          // Row to hold buttons
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              // Download PDF button
                               ElevatedButton(
                                 onPressed: () async {
                                   await generatePdf(fine);
@@ -200,9 +225,8 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
                                   ),
                                 ),
                               ),
-                              // Upload PDF button
                               ElevatedButton(
-                                onPressed: uploadPdfFromDevice, // Call uploadPdfFromDevice for uploading PDFs
+                                onPressed: uploadPdfFromDevice,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.blue,
                                   padding: EdgeInsets.symmetric(

@@ -1,72 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // For Firestore
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
+import 'package:open_filex/open_filex.dart';
+import 'dart:io';
 
 class TwentyEightPage extends StatefulWidget {
   final String userName; // Pass the user data
   TwentyEightPage({required this.userName});
-
 
   @override
   _TwentyEightPageState createState() => _TwentyEightPageState();
 }
 
 class _TwentyEightPageState extends State<TwentyEightPage> {
-  //int pendingFinesCount = 0;
-  //String pendingFineAmount = 'Rs. 0.00';
   List<Map<String, dynamic>> fineDataList = []; // List to store fine data
 
   Future<void> fetchGotFineData(String userName) async {
     try {
-      // Step 1: Fetch Driver details to get dlNo
       QuerySnapshot driverLicenceSnapshot = await FirebaseFirestore.instance
           .collection('DrivingLicence')
           .where('userName', isEqualTo: userName)
           .get();
 
-
       if (driverLicenceSnapshot.docs.isNotEmpty) {
-        // Assuming the first document contains the relevant data
         String dlNo = driverLicenceSnapshot.docs.first['dlNo'];
         print('Fetched dlNo: $dlNo');
 
-        // Step 2: Fetch Gotfine data using dlNo
         QuerySnapshot gotFineSnapshot = await FirebaseFirestore.instance
             .collection('GotFine')
             .where('dlNo', isEqualTo: dlNo)
             .get();
 
         if (gotFineSnapshot.docs.isNotEmpty) {
-
-
-          Future<int> countDocumentsWithDlNo(String dlNo) async {
-            QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-                .collection('GotFine')
-                .where('dlNo', isEqualTo: dlNo)
-                .get();
-
-            return querySnapshot.docs.length;
-          }
-
-          int count = await countDocumentsWithDlNo('dlNo');
-          print('Number of documents with dlNo ABC123: $count');
-
-
-
-          // Store all fines in fineDataList
           setState(() {
-            // pendingFinesCount = gotFineSnapshot.docs.length; // Count of pending fines
-            //pendingFineAmount = 'Rs. ${(gotFineSnapshot.docs.fold(0.0, (sum, doc) {
-            //var fineAmount = doc['fineAmount'];
-            /*&if (fineAmount is num) {
-                return sum + fineAmount; // If it's a number, add it to the sum
-              } else if (fineAmount is String) {
-                // Try parsing the string to a double, default to 0.0 if parsing fails
-                return sum + (double.tryParse(fineAmount) ?? 0.0);
-              }
-              return sum; // If neither num nor valid string, ignore the value
-            })).toStringAsFixed(2)}'   */
-
-            // Collect fine data for display
             fineDataList = gotFineSnapshot.docs
                 .map((doc) => {
               'fullName': doc['fullName'] ?? 'N/A',
@@ -90,6 +58,47 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
     }
   }
 
+  Future<void> generatePdf(Map<String, dynamic> fineData) async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.Page(
+        build: (context) => pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.Text("Fine Details", style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+            pw.SizedBox(height: 20),
+            pw.Text("Full Name: ${fineData['fullName']}"),
+            pw.Text("Vehicle No: ${fineData['vehicleNo']}"),
+            pw.Text("Date of Offence: ${fineData['dateOfOffence']}"),
+            pw.Text("Time of Offence: ${fineData['timeOfOffence']}"),
+            pw.Text("Place of Offence: ${fineData['placeOffence']}"),
+            pw.Text("Selected Fine: ${fineData['selectedFine']}"),
+            pw.Text("Court Date: ${fineData['courtDate']}"),
+          ],
+        ),
+      ),
+    );
+
+    final output = await getTemporaryDirectory();
+    final file = File("${output.path}/fine_details_${fineData['vehicleNo']}.pdf");
+    await file.writeAsBytes(await pdf.save());
+
+    // Open the PDF file after saving it
+    await OpenFilex.open(file.path);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("PDF downloaded and opened successfully for ${fineData['vehicleNo']}!")),
+    );
+  }
+
+  Future<void> uploadPdf(Map<String, dynamic> fineData) async {
+    // Implement your PDF upload logic here
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Upload PDF feature is not implemented yet for ${fineData['vehicleNo']}.")),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -107,7 +116,6 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                // Back button in the top left corner
                 Align(
                   alignment: Alignment.topLeft,
                   child: IconButton(
@@ -118,30 +126,6 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
                   ),
                 ),
                 SizedBox(height: 20),
-
-                // Display Pending Fines
-                /*   Text(
-                  'Pending Fines: $pendingFinesCount',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 20),
-
-                // Display Pending Fine Amount
-                Text(
-                 'Pending Fine Amount: $pendingFineAmount',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 20),
-*/
-                // Display Pending Fines Details
                 Expanded(
                   child: ListView.builder(
                     itemCount: fineDataList.length,
@@ -157,37 +141,52 @@ class _TwentyEightPageState extends State<TwentyEightPage> {
                           Text('Place of Offence: ${fine['placeOffence']}', style: TextStyle(color: Colors.white)),
                           Text('Selected Fine: ${fine['selectedFine']}', style: TextStyle(color: Colors.white)),
                           Text('Court Date: ${fine['courtDate']}', style: TextStyle(color: Colors.white)),
-                          SizedBox(height: 10), // Add some space between fines
+                          SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () async {
+                                  await generatePdf(fine);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.amber,
+                                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                ),
+                                child: Text(
+                                  'Download PDF',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  await uploadPdf(fine);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                ),
+                                child: Text(
+                                  'Upload PDF',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 20),
                         ],
                       );
                     },
                   ),
                 ),
-
-                SizedBox(height: 20),
-
-                // History Button
-                /*ElevatedButton(
-                  onPressed: () {
-                    // Navigate to the history page
-                    // Navigator.push(context, MaterialPageRoute(builder: (context) => TwentyNinePage(userData: widget.userData)));
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.amber,
-                    padding: EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Text(
-                    'History',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),*/
               ],
             ),
           ),
